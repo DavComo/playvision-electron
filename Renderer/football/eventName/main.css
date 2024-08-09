@@ -1,0 +1,23 @@
+.eventNameTop {
+	position: absolute;
+	color: white;
+	font-size: 40px;
+	left: 50px;
+	top: 30px;
+	font-family: sans-serif;
+}
+
+.eventNameBottom {
+	position: absolute;
+	color: white;
+	font-size: 40px;
+	left: 50px;
+	bottom: 30px;
+	font-family: sans-serif;
+}
+
+.eventNameTop.hidden { top: -100 !important;}
+.eventNameBottom.hidden { bottom: -100 !important;}
+
+.slow { transition: all 0.50s ease-out; }
+.fast { transition: all 0.25s ease-in; }

@@ -1,0 +1,274 @@
+body {
+    /*background-color: rgb(200, 200, 200);*/
+    display: flex;
+    justify-content: center;
+}
+
+.main-container {
+    width: 1010px;
+    height: auto;
+    /*background-color: black;*/
+    margin-top: auto;
+    margin-bottom: 200px;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%);
+    transition: clip-path 0.5s ease-in-out;
+}
+
+.center-container {
+    width: 1000px;
+    height: 91px;
+    background-color: white;
+    clip-path: polygon(0% 0%, 2.5% 100%, 97.5% 100%, 100% 0%);
+    display: flex;
+    border: 3px white solid;
+}
+
+.score-container-left {
+    width: 500px;
+    height: 91px;
+    display: flex;
+    flex-direction: row-reverse;
+    position: absolute;
+}
+
+.score-container-right {
+    width: 500px;
+    height: 91px;
+    display: flex;
+    position: absolute;
+}
+
+.score-block {
+    height: 90px;
+    width: 140px;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 80px;
+    color: white;
+    font-family: 'Franklin Gothic Heavy';
+    justify-content: center;
+    align-content: center;
+}
+
+.school-sign {
+    font-family: 'Franklin Gothic Heavy';
+    font-size: 80px;
+}
+
+.gradient-left {
+    width: 500px;
+    height: 91px;
+    clip-path: polygon(0% 0%, 5% 100%, 100% 100%, 100% 0%); 
+    background: linear-gradient(90deg, rgba(0,0,0,0.8) 5%, rgba(0,0,0,0) 70%);
+}
+
+.gradient-right {
+    width: 500px;
+    height: 91px;
+    clip-path: polygon(0% 0%, 0% 100%, 95% 100%, 100% 0%); 
+    background: linear-gradient(90deg, rgba(0,0,0,0) 30%, rgba(0,0,0,0.8) 95%);
+}
+
+.icon-box {
+    display: flex;
+    height: 91px;
+    align-content: center;
+    flex-wrap: wrap;
+}
+
+img {
+    height: 150px;
+    width: 150px;
+}
+
+.top-container {
+    width: 370px;
+    height: 38px;
+    background-color: white;
+    clip-path: polygon(2.5% 0%, 0% 100%, 100% 100%, 97.5% 0%);
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    border: 3px white solid;
+    margin-top: auto;
+    margin-bottom: -3px;
+    border-top: none;
+}
+
+.top-colored {
+    width: 380px;
+    height: 38px;
+    background: linear-gradient(90deg, rgba(135,65,70,1) 0%, rgba(37,68,132,1) 100%);;
+    clip-path: polygon(2.5% 10%, 0.5% 100%, 99.5% 100%, 97.5% 10%);
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+.top-colored b {
+    font-size: 30px;
+    color: white;
+    font-family: 'Franklin Gothic Heavy';
+    margin-top: 3px;
+}
+
+.bottom-container {
+    width: 160px;
+    height: 35px;
+    background-color: white;
+    clip-path: polygon(0% 0%, 5% 100%, 95% 100%, 100% 0%);
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    border: 3px white solid;
+    margin-bottom: auto;
+    margin-top: -3px;
+    z-index: -1;
+}
+
+.bottom-colored {
+    width: 160px;
+    height: 35px;
+    background: linear-gradient(90deg, rgba(135,65,70,1) 0%, rgba(37,68,132,1) 100%);
+    clip-path: polygon(0% 0%, 5% 100%, 95% 100%, 100% 0%);
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+.bottom-colored b {
+    font-size: 30px;
+    color: white;
+    font-family: 'Franklin Gothic Heavy';
+}
+
+.main-container.hidden {
+    clip-path: polygon(50% 0%, 50% 100%, 50% 100%, 50% 0%);
+    margin-bottom: 200px;
+}
+
+.bottom-container.hidden {
+    margin-top: -80px;
+    margin-bottom: 0px;
+}
+
+.card-container {
+    width: 700px;
+    height: 90px;
+    background: linear-gradient(0deg, #EAAA02 0%, #01587C 100%);
+    clip-path: polygon(7% 0%, 0% 100%, 100% 100%, 93% 0%);
+}
+
+.card-inset {
+    width: 695px;
+    height: 85px;
+    background-color: white;
+    clip-path: polygon(7.5% 5%, 1.5% 100%, 99.2% 100%, 93.2% 5%); 
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: row;
+    align-content: center;
+    flex-wrap: wrap;
+}
+
+.card-icon {
+    width: 65px;
+    height: 65px;
+}
+
+.card-icon-container {
+    width: 75px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: wrap;
+    margin-left: 70px;
+    margin-top: 5px;
+}
+
+.card-num-container {
+    width: 68px;
+    height: 68px;
+    background: linear-gradient(0deg, #01587C 0%, #EAAA02 100%);
+    border-radius: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+    margin-top: 5px;
+    margin-left: 20px;
+}
+
+.card-num-container b {
+    font-size: 50px;
+    color: white;
+    font-family: 'Franklin Gothic Heavy';
+}
+
+.card-right-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+    width: 420px;
+    flex-direction: column;
+}
+
+.separator-line {
+    width: 90%;
+    height: 3px;
+    background-color: black;
+}
+
+.card-type img{
+    width: 41px;
+    height: 50px;
+}
+
+.card-type {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+}
+
+.text {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+}
+
+.team-name {
+    font-size: 35px;
+    font-family: Maven Pro;
+}
+
+.card-type-text {
+    font-size: 20px;
+    font-family: Maven Pro;
+}
+
+.text-plus-cardtype {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-content: center;
+    margin-bottom: 2px;
+}
+
+.hidden {
+    margin-bottom: -90px;
+}
+
+.card-container.slow.fast.hidden {
+    clip-path: polygon(50% 0%, 50% 100%, 50% 100%, 50% 0%);
+}
+
+.slow { transition: all 0.50s ease-out; }
+.fast { transition: all 0.25s ease-in; }

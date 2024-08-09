@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="./obsController.css">
+        <script type="module" src="./obsController.js"></script>
+        <script type="module" src="./node_modules/obs-websocket-js/dist/obs-ws.min.js"></script>
+    </head>
+    <body>
+        <div class="previews-container">
+            <div style="width: 1069px;">
+                <b style="margin-top: auto;">Preview</b>
+                <b style="margin-bottom: 20px; font-size: 35px;" id="liveSign">Live</b>
+                <b style="margin-top: auto;">Program</b>
+            </div>
+            <div>
+                <img id="preview" alt="OBS Scene Preview" style="grid-row: 2; grid-column: 1;"/>
+                <img id="program" alt="OBS Scene Program" style="grid-row: 2; grid-column: 2; border-left: none;"/>
+            </div>
+        </div>
+    </body>
+</html>

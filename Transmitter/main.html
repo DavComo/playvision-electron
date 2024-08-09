@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description"
+            content="Control Panel for the MIS Streaming Integrated System">
+        <title>Control Panel</title>
+        <link rel="stylesheet" href="./main.css">
+        <script type="module" src="./main.js"></script>
+
+        <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1520.0.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script src="../.streamData.js"></script>
+    </head>
+
+
+
+    
+    <body style="background-color: #f0f0f0; margin-top: -20px;">
+        <div class="blur" id="blurrableElement">
+            <!-- Navigation Bar -->
+            <header class="tabs tabs--standalone navbar" style="border-top: none; -webkit-app-region: drag; position: sticky; top: 0; z-index: 999;">
+                <div role="tablist" class="hScroller" style="margin-left: 80px;">
+                    <span class hScroller-scroll is-calculated id="navBar">
+                        <span class="tabs-tab is-active" role="tab" id="pickColorPageTab">
+                            Color Page
+                        </span>
+                        <span class="tabs-tab" role="tab" id="pickEventNameTab">
+                            Event Name
+                        </span>
+                        <span class="tabs-tab" role="tab" id="pickStartingSoonPageTab">
+                            Starting Soon
+                        </span>
+                        <span class="tabs-tab" role="tab" id="pickTeamScoresTab">
+                            Team Scores
+                        </span>
+                        <span class="tabs-tab" role="tab" id="pickStopwatchTab">
+                            Stopwatch
+                        </span>
+                    </span>
+                </div>
+
+                <div class="infoBar">
+                    <span class="tabs-tab noHover" style="margin-right: 10px; margin-left: auto; margin-top: auto; margin-bottom: auto;" id="serverStatus"></span>
+                    <input class="tabs-tab" style="margin-right: 10px; margin-left: 0px; margin-top: auto; margin-bottom: auto; cursor: text;" id="serverName">
+                    <button class="button--primary button button--icon" style="width:fit-content; margin-bottom: auto; margin-right: 5px; background-color:#1E6FB3; border-color: #1E6FB3; margin-top: auto; height: 30px; -webkit-app-region: no-drag;"  id="resetValues">
+                        <span>
+                            Sync/Reset Values
+                        </span>
+                    </button>
+                </div>  
+            </header>
+
+            <ul class="tabPanes js-pageTabPanes page-panes">
+                <!-- Color Setter page -->
+                <li id="colorPage" class="is-active">
+                    <div class="block-container">
+                        <div class="block-body" id="colorDiv">
+                            
+                        </div>
+                    </div>
+                </li>
+
+                <!-- Event Name Setter page-->
+                <li id="eventName">
+                    <div class="block-container">
+                        <div class="block-body">
+                            <dl class="formRow formRow--input">
+                                <dt style="padding-top: 22px;">
+                                    <div class="formRow-labelWrapper">
+                                        <label class="formRow-label">Event Name</label>
+                                    </div>
+                                </dt>
+                                <dd>
+                                    <div class="inputGroup inputGroup--joined">
+                                        <input type="text" class="input texts t1" id="eventNameIs">
+                                    </div>
+                                </dd>
+                            </dl>
+
+                            <hr class="formRowSep">
+
+                            <dl class="formRow formRow--input">
+                                <dt style="padding-top: 22px;">
+                                    <div class="formRow-labelWrapper">
+                                        <label class="formRow-label">Event Scene</label>
+                                    </div>
+                                </dt>
+                                <dd>
+                                    <div class="inputGroup inputGroup--joined">
+                                        <select type="text" class="texts t1 eventScene_1 input" id="eventScene">
+                                            <option value="gamePlay" selected="gamePlay" id="gamePlay">gamePlay</option>
+                                            <option value="startingSoon" selected="startingSoon" id="startingSoon">startingSoon</option>
+                                        </select>
+                                    </div>
+                                </dd>
+                            </dl>
+
+                            <hr class="formRowSep">
+
+                            <dl class="formRow formRow--input">
+                                <dt style="padding-top: 17px;">
+                                    <div class="formRow-labelWrapper">
+                                        <label class="formRow-label">Show Event</label>
+                                    </div>
+                                </dt>
+                                <dd>
+                                    <div class="inputGroup inputGroup--joined">
+                                        <input type="checkbox" class="checks c1 clickToShow_1" id="showEvent" style="height: 30px; width: 30px">
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- Starting Soon Setter page-->
+                <li id="startingSoonPage">
+                    <div class="block-container">
+                        <div class="block-body">
+                            <dl class="formRow formRow--input">
+                                <dt style="padding-top: 22px;">
+                                    <div class="formRow-labelWrapper">
+                                        <label class="formRow-label">Event Title</label>
+                                    </div>
+                                </dt>
+                                <dd>
+                                    <div class="inputGroup inputGroup--joined">
+                                        <input type="text" class="input texts t1" id="eventTitle">
+                                    </div>
+                                </dd>
+                            </dl>
+
+                            <hr class="formRowSep">
+
+                            <dl class="formRow formRow--input">
+                                <dt style="padding-top: 22px;">
+                                    <div class="formRow-labelWrapper">
+                                        <label class="formRow-label">Event Subtitle</label>
+                                    </div>
+                                </dt>
+                                <dd>
+                                    <div class="inputGroup inputGroup--joined">
+                                        <input type="text" class="input texts t1" id="eventSubtitle">
+                                    </div>
+                                </dd>
+                            </dl>
+
+                            <hr class="formRowSep">
+
+                            <dl class="formRow formRow--input">
+                                <dt style="padding-top: 22px;">
+                                    <div class="formRow-labelWrapper">
+                                        <label class="formRow-label">Next Event</label>
+                                    </div>
+                                </dt>
+                                <dd>
+                                    <div class="inputGroup inputGroup--joined">
+                                        <input type="text" class="input texts t1" id="nextEvent">
+                                    </div>
+                                </dd>
+                            </dl>
+
+                            <hr class="formRowSep">
+
+                            <dl class="formRow formRow--input">
+                                <dt style="padding-top: 22px;">
+                                    <div class="formRow-labelWrapper">
+                                        <label class="formRow-label">Start Time (24:00:00 Format)</label>
+                                    </div>
+                                </dt>
+                                <dd>
+                                    <div class="inputGroup inputGroup--joined">
+                                        <input type="text" class="input texts t1" id="startTime">
+                                    </div>
+                                </dd>
+                            </dl>
+
+                            <hr class="formRowSep">
+
+                            <dl class="formRow formRow--input">
+                                <dt style="padding-top: 22px;">
+                                    <div class="formRow-labelWrapper">
+                                        <label class="formRow-label">Theme School</label>
+                                    </div>
+                                </dt>
+                                <dd>
+                                    <div class="inputGroup inputGroup--joined">
+                                        <input type="text" class="input texts t1" id="themeSchool">
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- Team Scores Setter page -->
+                <li id="teamScores">
+                    <div class="block-container">
+                        <div class="block-body">
+                            <dl class="formRow formRow--input">
+                                <dt>
+                                    <div class="formRow-labelWrapper">
+                                        <label class="formRow-label">Game Scores</label>
+                                    </div>
+                                </dt>
+                                <dd>
+                                    <div class="inputGroup inputGroup--joined">
+                                        <span class="inputGroup-text">Side 1 Name & Score</span>
+                                        <input type="text" class="input texts t1" id="side_1-name-scores">
+                                        <span class="inputGroup-splitter"></span>
+                                        <input type="number" class="input input--number js-numberBoxTextInput" min="0" id="side_1-score">
+                                    </div>
+                                    <div class="inputGroup inputGroup--joined">
+                                        <span class="inputGroup-text">Side 2 Name & Score</span>
+                                        <input type="text" class="input texts t1" id="side_2-name-scores">
+                                        <span class="inputGroup-splitter"></span>
+                                        <input type="number" class="input input--number js-numberBoxTextInput" min="0" id="side_2-score">
+                                    </div>
+                                </dd>
+                            </dl>
+
+                            <hr class="formRowSep">
+
+                            <dl class="formRow formRow--input">
+                                <dt style="padding-top: 22px;">
+                                    <div class="formRow-labelWrapper">
+                                        <label class="formRow-label">Game Name</label>
+                                    </div>
+                                </dt>
+                                <dd>
+                                    <div class="inputGroup inputGroup--joined">
+                                        <input type="text" class="input texts t1" id="gameName">
+                                    </div>
+                                </dd>
+                            </dl>
+
+                            <hr class="formRowSep">
+
+                            <dl class="formRow formRow--input">
+                                <dt style="padding-top: 17px;">
+                                    <div class="formRow-labelWrapper">
+                                        <label class="formRow-label">Show Game</label>
+                                    </div>
+                                </dt>
+                                <dd>
+                                    <div class="inputGroup inputGroup--joined">
+                                        <input type="checkbox" class="checks c1 clickToShow_1" id="showGame" style="height: 30px; width: 30px">
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- Stopwatch Setter page-->
+                <li id="stopwatch">
+                    <div class="block-container">
+                        <div class="block-body">
+                            <dl class="formRow formRow--input">
+                                <dt style="padding-top: 22px;">
+                                    <div class="formRow-labelWrapper">
+                                        <label class="formRow-label">Game Time</label>
+                                    </div>
+                                </dt>
+                                <dd>
+                                    <div class="inputGroup inputGroup--joined">
+                                        <input type="text" class="input texts t1" id="valueMs">
+                                        <span class="inputGroup-splitter"></span>
+                                        <button type="button" class="start button" id="startAndStop">Start</button>
+                                        <span class="inputGroup-splitter"></span>
+                                        <button type="button" class="reset button" id="reset">Reset</button>
+                                    </div>
+                                </dd>
+                            </dl>
+
+                            <hr class="formRowSep">
+
+                            <dl class="formRow formRow--input">
+                                <dt style="padding-top: 22px;">
+                                    <div class="formRow-labelWrapper">
+                                        <label class="formRow-label">Period Interval (Seconds)</label>
+                                    </div>
+                                </dt>
+                                <dd>
+                                    <div class="inputGroup inputGroup--joined">
+                                        <input type="text" class="input texts t1" id="periodInterval">
+                                    </div>
+                                </dd>
+                            </dl>
+
+                            <hr class="formRowSep">
+
+                            <dl class="formRow formRow--input">
+                                <dt style="padding-top: 22px;">
+                                    <div class="formRow-labelWrapper">
+                                        <label class="formRow-label">Period Marker</label>
+                                    </div>
+                                </dt>
+                                <dd>
+                                    <div class="inputGroup inputGroup--joined">
+                                        <input type="text" class="input texts t1" id="periodMark">
+                                    </div>
+                                </dd>
+                            </dl>
+
+                            <hr class="formRowSep">
+
+                            <dl class="formRow formRow--input">
+                                <dt style="padding-top: 17px;">
+                                    <div class="formRow-labelWrapper">
+                                        <label class="formRow-label">Show Stopwatch</label>
+                                    </div>
+                                </dt>
+                                <dd>
+                                    <div class="inputGroup inputGroup--joined">
+                                        <input type="checkbox" class="checks c1 clickToShow_1" id="showStopwatch" style="height: 30px; width: 30px">
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="formSubmitRow-main">
+                <div class="formSubmitRow-bar"></div>
+                <div class="formSubmitRow-controls" style="padding-left: 0px;">
+                    <button type="submit" class="button--primary button button--icon button--icon--save" id="saveValues" style="display: block; margin-left: auto; margin-right: auto;">
+                        <span>
+                            Save Values
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

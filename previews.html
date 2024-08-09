@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .grid-container {
+                display: grid;
+                gap: 10px;
+                height: 2880px;
+                width: 5120px;
+            }
+
+            iframe {
+                border: none;
+                background-color: rgb(183, 183, 183);
+            }
+
+            .overlay-text {
+                font-size: 300px;
+                width: 2560px;
+                height: 1440px;
+                align-content: center;
+                text-align: center;
+                color: rgba(255, 255, 255, 0.245);
+                font-family: Arial, Helvetica, sans-serif;
+            }
+        </style>
+    </head>
+    <body style="background-color: black;">
+        <div class="grid-container" style="background-color: black; justify-content: center; align-items: center; position: absolute;">
+            <iframe src="http://localhost:5500/Renderer/football/teamScores/main.html" height="1440px" width="2560px" style="grid-row: 1; grid-column: 2;"></iframe>
+            <iframe src="http://localhost:5500/Renderer/football/eventName/main.html" height="1440px" width="2560px" style="grid-row: 2; grid-column: 1;"></iframe>
+            <iframe src="http://localhost:5500/Renderer/football/startingSoon/main.html" height="1440px" width="2560px" style="grid-row: 1; grid-column: 1;"></iframe>
+            <iframe  height="1440px" width="2560px" style="grid-row: 2; grid-column: 2;"></iframe>
+        </div>
+        <div class="grid-container" style="background-color: transparent; justify-content: center; align-items: center; position: absolute;">
+            <b style="grid-row: 1; grid-column: 1;" class="overlay-text">Countdown</b>
+            <b style="grid-row: 1; grid-column: 2;" class="overlay-text">Scores</b>
+            <b style="grid-row: 2; grid-column: 1;" class="overlay-text">Announcement</b>
+            <b style="grid-row: 2; grid-column: 2;" class="overlay-text">EMPTY</b>
+        </div>
+    </body>
+</html>

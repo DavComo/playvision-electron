@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="renderer.js"></script> <!-- Ensure this is loaded in the renderer process -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resizable Panels with iframes</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #top-panel, #bottom-panel {
+            display: flex;
+            flex: 1;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #top-panel {
+            min-height: 100px; /* Minimum height for top panel */
+        }
+
+        #bottom-panel {
+            min-height: 100px; /* Minimum height for bottom panel */
+        }
+
+        #resizer {
+            background-color: #8d8d8d;
+            height: 3px;
+            cursor: row-resize;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0); /* Transparent */
+            display: none; /* Hidden by default */
+        }
+    </style>
+</head>
+<body>
+
+<div id="top-panel">
+    <iframe src="./obsControls.html"></iframe> <!-- Replace with your top panel content -->
+</div>
+<div id="resizer"></div>
+<div id="bottom-panel">
+    <iframe src="./Transmitter/main.html"></iframe> <!-- Replace with your bottom panel content -->
+</div>
+
+<div id="overlay" class="overlay"></div>
+
+<script>
+    const resizer = document.getElementById('resizer');
+    const topPanel = document.getElementById('top-panel');
+    const bottomPanel = document.getElementById('bottom-panel');
+    const overlay = document.getElementById('overlay');
+    let isResizing = false;
+
+    const minHeight = 100; // Minimum height for both panels
+
+    resizer.addEventListener('mousedown', (e) => {
+        isResizing = true;
+        document.body.style.cursor = 'row-resize';
+        overlay.style.display = 'block'; // Show overlay to capture mouse events
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isResizing) return;
+
+        const offset = e.clientY;
+        const totalHeight = window.innerHeight;
+
+        // Calculate the new heights, ensuring neither panel is below the minimum height
+        const topHeight = Math.max(minHeight, offset);
+        const bottomHeight = Math.max(minHeight, totalHeight - offset - resizer.offsetHeight);
+
+        if (topHeight + bottomHeight + resizer.offsetHeight <= totalHeight) {
+            topPanel.style.flex = `0 0 ${topHeight}px`;
+            bottomPanel.style.flex = `0 0 ${bottomHeight}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isResizing) {
+            isResizing = false;
+            document.body.style.cursor = 'default';
+            overlay.style.display = 'none'; // Hide overlay when resizing stops
+        }
+    });
+</script>
+
+</body>
+</html>

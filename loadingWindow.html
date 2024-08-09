@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html style="height: 100%;">
+<head>
+    <style>
+        .loader {
+            border: 8px solid #f3f3f300; /* Light grey */
+            border-top: 8px solid #6c6c6c; /* Blue */
+            border-radius: 50%;
+            width: 230px;
+            height: 230px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body style="margin: 0; height: 300px; width: 300px; background-color: #7c7c7c; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+    <img src="./CommonUse/logo.png" style="width: 200px;">
+    <div class="loader" style="position: absolute;"></div>
+</body>
+</html>

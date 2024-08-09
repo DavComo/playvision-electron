@@ -1,0 +1,114 @@
+body {
+	margin: 0;
+	padding: 0;
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.main-container {
+    transition: clip-path 1s ease;
+
+    width: 700px;
+    height: 70px;
+    margin-bottom: 100px;
+    margin-left: 200px;
+    display: flex;
+    align-items: center;
+    clip-path: polygon(18px 0, 100% 0, 682px 100%, 0 100%);
+}
+
+.placement-box {
+    width: 90px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    font-family: 'Arial', sans-serif;
+    background-color: goldenrod;
+    border-radius: 5px;
+    clip-path: polygon(18px 0, 100% 0, 72px 100%, 0 100%);
+}
+
+.center-box {
+    width: 500px;
+    height: 50px;
+    display: flex;
+    justify-content: normal;
+    align-items: center;
+    flex-direction: row;
+    font-size: 18px;
+    color: white;
+    font-family: 'Arial', sans-serif;
+    font-weight: bold;
+    background-color: #254484;
+    border-radius: 5px;
+    clip-path: polygon(18px 0, 100% 0, 482px 100%, 0 100%);
+    margin-left: -10px;
+}
+
+.school-code {
+    margin-top: 15px;
+    color: white;
+    font-weight: normal;
+    margin-left: 25px;
+    font-style: italic;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.school-icon {
+    width: 30px;
+    margin-left: 15px;
+}
+
+.skier-number {
+    color: wheat;
+    margin-left: 10px;
+    font-weight: normal;
+}
+
+.skier-name {
+    font-size: 25px;
+    margin-left: 15px;
+    padding-left: 20px;
+    border-left: 2px solid white;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-right: 30px;
+}
+
+.timebox-border {
+    width: 130px;
+    height: 50px;
+    background-color: black;
+    margin-left: -10px;
+    clip-path: polygon(16px 0, 130px 0, 114px 100%, 0 100%);
+}
+
+.timebox {
+    transition: background-color 1s ease; 
+
+    width: 130px;
+    height: 50px;
+    background-color: darkgreen;
+    border-radius: 5px;
+    clip-path: polygon(20px 1px, 124px 1px, 111px 49px, 4px 49px);
+    margin-left: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.time {
+    font-size: 20px;
+    margin-left: 15px;
+    font-weight: bold;
+    margin: 0;
+    font-family: 'Courier New', Courier, monospace;
+
+}
+
+.main-container.hidden {
+    clip-path: polygon(18px 0, 18px 0, 0 100%, 0 100%);
+}
