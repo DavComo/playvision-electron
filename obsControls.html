@@ -2,19 +2,85 @@
 <html>
     <head>
         <link rel="stylesheet" href="./obsController.css">
+        <script src="https://kit.fontawesome.com/09366b7489.js" crossorigin="anonymous"></script>
         <script type="module" src="./obsController.js"></script>
         <script type="module" src="./node_modules/obs-websocket-js/dist/obs-ws.min.js"></script>
     </head>
     <body>
-        <div class="previews-container">
-            <div style="width: 1069px;">
-                <b style="margin-top: auto;">Preview</b>
-                <b style="margin-bottom: 20px; font-size: 35px;" id="liveSign">Live</b>
-                <b style="margin-top: auto;">Program</b>
+        <div id="error-box" class="hidden">
+            <p id="error-title"></p>
+            <p id="error-message"></p>
+        </div>
+        <div id="body" class="blur">
+            <div style="display: flex; flex-direction: row; justify-content: space-evenly;">
+                <p class="arrow left hidden" id="transitionArrowLeft"></p>
+                <p class="arrow right hidden" id="transitionArrowRight"></p>
+                <div class="previews-container">
+                    <div style="width: 1069px;">
+                        <b style="margin-top: auto;">Preview</b>
+                        <b style="margin-bottom: 20px; font-size: 35px; color: rgb(226, 20, 60)" id="liveSign">Connecting</b>
+                        <b style="margin-top: auto;">Program</b>
+                    </div>
+                    <div class="previews-image-container">
+                        <img id="preview" alt=" " style="grid-row: 2; grid-column: 1; border: 2px solid green;"/>
+                        <img id="program" alt=" " style="grid-row: 2; grid-column: 2; border: 2px solid red;"/>
+                    </div>
+                </div>
+                <div class="toggle-stream-container">
+                    <button class="obs-control-button" id="toggleStreamButton" onclick="toggleStream()"><b id="toggleStreamText">Start Stream</b><div class="loader hidden" style="position: absolute;" id="toggleStreamLoader"></div></button>
+                    <button class="obs-control-button" id="toggleRecordingButton" onclick="toggleRecording()" style="margin-bottom: 5px;"><b id="toggleRecordingText">Start Recording</b><div class="loader hidden" style="position: absolute;" id="toggleRecordingLoader"></div></button>
+                    <hr>
+                    <button class="obs-control-button" id="activateTransitionButton" onclick="activateTransition()" style="margin-bottom: 5px;"><b id="activateTransitionText">Transition</b><div class="loader hidden" style="position: absolute;" id="activateTransitionLoader"></div></button>
+                    <div class="scene-list" id="scene-list">
+                        <div class="list-title"><div class="loader white hidden" style="position: absolute;" id="changeSceneLoader"></div>Preview Scene</div>
+                    </div>
+                </div>
             </div>
-            <div>
-                <img id="preview" alt="OBS Scene Preview" style="grid-row: 2; grid-column: 1;"/>
-                <img id="program" alt="OBS Scene Program" style="grid-row: 2; grid-column: 2; border-left: none;"/>
+            <div id="streamStatsContainer">
+                <div class="stream-stat">
+                    <b class="stat-title">Dropped Frames</b>
+                    <div style="display: flex; flex-direction: row; align-items: center;">
+                        <div class="progress-bar" id="droppedFramesBar">
+                            <div class="segment"></div>
+                            <div class="segment"></div>
+                            <div class="segment"></div>
+                            <div class="segment"></div>
+                            <div class="segment"></div>
+                            <div class="segment"></div>
+                            <div class="segment"></div>
+                            <div class="segment"></div>
+                            <div class="segment"></div>
+                            <div class="segment"></div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; align-items: center;">
+                            <b id="droppedFramesStats">91/200</b>
+                            <b id="droppedFramesPercentage">45.5%</b>
+                        </div>
+                    </div>
+                </div>
+                <div class="stream-stat" style="padding-top: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly;">
+                    <div style="display: flex; flex-direction: row; align-items: center;">
+                        <i class="fa-solid fa-arrows-up-to-line" style="color: red; font-size: 10px; margin-right: 5px;" id="streamingOutputDot"></i>
+                        <b class="duration-timer" id="streamingDurationTimer">00:00:00</b>
+                    </div>
+                    <div style="display: flex; flex-direction: row; align-items: center;">
+                        <div style="display: block; background-color: red; border-radius: 50%; height: 10px; width: 10px; margin-right: 5px;" id="recordingOutputDot"></div>
+                        <b class="duration-timer" id="recordingDurationTimer">00:00:00</b>
+                    </div>
+                </div>
+                <div class="stream-stat" style="justify-content: flex-end;">
+                    <b class="stat-title" style="margin-left: 0">Congestion</b>
+                    <div style="display: flex; flex-direction: row; align-items: center; justify-content: center;">
+                        <b style="color: rgb(0, 128, 0)" id="congestion">0%</b>
+                    </div>
+                </div>
+                <div class="stream-stat" style="padding-left: 20px; padding-right: 20px; padding-bottom: 8px;">
+                    <b class="stat-title" style="margin-left: 0">Selected Transition</b>
+                    <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; margin-top: 2px;">
+                        <select name="transitionOptions" id="transitionOptions" onchange="changeTransition()">
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
     </body>

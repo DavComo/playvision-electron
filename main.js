@@ -1,7 +1,8 @@
 const { app, BrowserWindow, Menu, ipcMain} = require('electron');
-const { spawn } = require('child_process');
 const path = require('path');
 const url = require('url');
+const express = require('express');
+const { updateElectronApp, UpdateSourceType } = require('update-electron-app')
 
 let pythonProcess;
 
@@ -10,30 +11,18 @@ function createWindow() {
         width: 300,
         height: 300,
         frame: false,
+        transparent: true,
         webPreferences: {
             nodeIntegration: true
         },
         show: false
     });
 
-    const previews = new BrowserWindow({
-        width: 1285,
-        height: 755,
-        title: "PlaVision - Overlay Previews",
-        webPreferences: {
-            nodeIntegration: false,
-            contextIsolation: false,
-            enableRemoteModule: true,
-            zoomFactor: 0.234375, // 1200/2560 = 0.46875 to scale down 2560x1440 to 1200x800
-        },
-        show: false
-    });
-
-    const win = new BrowserWindow({
+    let win = new BrowserWindow({
         width: 1200,
         height: 800,
         frame: true,
-        title: 'Control Panel',
+        title: 'PlayVision - Control Panel',
         titleBarStyle: 'hiddenInset',
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
@@ -71,6 +60,40 @@ function createWindow() {
         submenu: [
             {label: 'Show Previews',
                 click: async () => {
+                    const previewLoading = new BrowserWindow({
+                        width: 300,
+                        height: 300,
+                        frame: false,
+                        transparent: true,
+                        webPreferences: {
+                            nodeIntegration: true
+                        },
+                        show: false
+                    }); 
+                    previewLoading.loadURL(url.format({
+                        pathname: path.join(__dirname, './loadingWindow.html'),
+                        protocol: 'file:',
+                        slashes: true
+                    }), {"extraHeaders" : "pragma: no-cache\n"});
+                
+                
+                    previewLoading.once('ready-to-show', () => {
+                        previewLoading.show();
+                    });
+
+                    let previews = new BrowserWindow({
+                        width: 1285,
+                        height: 755,
+                        title: "PlayVision - Overlay Previews",
+                        webPreferences: {
+                            nodeIntegration: false,
+                            contextIsolation: false,
+                            enableRemoteModule: true,
+                            zoomFactor: 0.234375, // 1200/2560 = 0.46875 to scale down 2560x1440 to 1200x800
+                        },
+                        show: false
+                    });
+
                     if (previews.isVisible()) {
                         previews.focus();
                         return
@@ -87,8 +110,13 @@ function createWindow() {
                 
                     // Ensure the zoomFactor is set after the window is ready
                     previews.webContents.on('did-finish-load', () => {
+                        previewLoading.close();
                         previews.show();
                         previews.webContents.setZoomFactor(0.234375); // Set the zoom factor to scale the content down
+                    });
+
+                    previews.on('closed', () => {
+                        previews = null;
                     });
                 }
             },
@@ -134,45 +162,61 @@ function createWindow() {
     }]
 
 
-    const executablePath = path.join(__dirname, process.platform === 'win32' ? 'run.exe' : 'run');
+    /*const executablePath = path.join(__dirname, process.platform === 'win32' ? 'run.exe' : 'run');
     console.log(`Starting Python script: ${executablePath}`);
 
-    pythonProcess = spawn(executablePath);
+    pythonProcess = spawn(executablePath);*/
 
-    pythonProcess.stdout.on('data', (data) => {
-        console.log(`stdout: ${data}`);
-        if (data.toString().includes("Starting server...")) {
-            loadingWindow.close();
+    loadingWindow.close();
 
-            win.loadURL(url.format({
-                pathname: path.join(__dirname, './mainScreen.html'),
-                protocol: 'file:',
-                slashes: true
-            }), {"extraHeaders" : "pragma: no-cache\n"});
+    win.loadURL(url.format({
+        pathname: path.join(__dirname, './mainScreen.html'),
+        protocol: 'file:',
+        slashes: true
+    }), {"extraHeaders" : "pragma: no-cache\n"});
 
-            win.once('ready-to-show', () => {
-                win.show();
-                const menu = Menu.buildFromTemplate(template)
-                Menu.setApplicationMenu(menu)
-            });
-
-            win.on('close', (event) => {
-                event.preventDefault(); // Prevent the default close behavior
-                win.hide();      // Hide the window instead of closing
-            });
-        }
+    win.once('ready-to-show', () => {
+        win.show();
+        const menu = Menu.buildFromTemplate(template)
+        Menu.setApplicationMenu(menu)
     });
 
-    pythonProcess.stderr.on('data', (data) => {
-        console.error(`stderr: ${data}`);
+    //When page is reloaded or loaded, set both OBS Control and Overlay Control checkboxes to true in the menu
+    win.webContents.on('did-finish-load', () => {
+        const menu = Menu.getApplicationMenu()
+        menu.items[2].submenu.items[3].checked = true
+        menu.items[2].submenu.items[4].checked = true
     });
 
-    pythonProcess.on('close', (code) => {
-        console.log(`Python process exited with code ${code}`);
+
+    win.on('closed', () => {
+        win = null;
     });
 }
 
 app.whenReady().then(() => {
+    const expressApp = express();
+    const port = 5500;
+
+    expressApp.use((req, res, next) => {
+        if (req.url.startsWith('/.')) {
+            res.sendFile(path.join(__dirname, req.url), { dotfiles: 'allow' });
+        } else {
+            next();
+        }
+    });
+
+    expressApp.get('/teamScores', (req, res) => {
+        res.sendFile(path.join(__dirname, 'Renderer', 'football', 'teamScores', 'main.html'));
+    });
+
+    // Serve other files normally
+    expressApp.use(express.static(path.join(__dirname)));
+
+    // Start the server
+    expressApp.listen(port, () => {
+        console.log(`Server is running at http://localhost:${port}`);
+    });
     createWindow();
 })
 
@@ -181,13 +225,23 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', () => {
+    console.log("Before quit application");
     if (pythonProcess) {
         pythonProcess.kill();
     }
 });
 
 app.on('activate', () => {
+    console.log(BrowserWindow.getAllWindows());
     if (BrowserWindow.getAllWindows().length === 0) {
         createWindow();
+    }
+});
+
+// Force close the application when quitting
+app.on('quit', () => {
+    console.log("Quitting application");
+    if (pythonProcess) {
+        pythonProcess.kill();
     }
 });

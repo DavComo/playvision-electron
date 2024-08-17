@@ -1,16 +1,51 @@
 {
-  "name": "my-chromium-app",
-  "productName": "PlayVision",
-  "version": "1.0.0",
+  "name": "PlayVision",
+  "version": "0.3.0",
+  "description": "PlayVision integrated stream helper",
+  "author": "David Comor",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder --mac --win"
   },
   "devDependencies": {
     "electron": "^31.3.1",
     "electron-packager": "^17.1.2"
   },
   "dependencies": {
-    "obs-websocket-js": "^5.0.5"
+    "express": "^4.19.2",
+    "obs-websocket-js": "^5.0.5",
+    "update-electron-app": "^3.0.0"
+  },
+  "build": {
+    "appId": "com.playvision.playvisionApp",
+    "productName": "PlayVision",
+    "files": [
+      "**/*",
+      "!**/.gitignore",
+      "!**/.git/**",
+      "!**/.vscode/**"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "icon": "build/logo.icns"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "build/logo.ico"
+    }
   }
 }

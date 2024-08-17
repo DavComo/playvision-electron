@@ -4,7 +4,6 @@
     <script src="renderer.js"></script> <!-- Ensure this is loaded in the renderer process -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resizable Panels with iframes</title>
     <style>
         body {
             margin: 0;
@@ -20,17 +19,18 @@
 
         #top-panel, #bottom-panel {
             display: flex;
-            flex: 1;
             justify-content: center;
             align-items: center;
             overflow: hidden;
         }
 
         #top-panel {
+            flex: 0 0 52%;
             min-height: 100px; /* Minimum height for top panel */
         }
 
         #bottom-panel {
+            flex: 0 0 47%;
             min-height: 100px; /* Minimum height for bottom panel */
         }
 
@@ -56,10 +56,20 @@
             background: rgba(255, 255, 255, 0); /* Transparent */
             display: none; /* Hidden by default */
         }
+
+        .draggable-bar {
+            width: 100%;
+            height: 40px;
+            background-color: transparent;
+            cursor: move;
+            position: absolute;
+            top: 0;
+            -webkit-app-region: drag;
+        }
     </style>
 </head>
 <body>
-
+<div class="draggable-bar"></div>
 <div id="top-panel">
     <iframe src="./obsControls.html"></iframe> <!-- Replace with your top panel content -->
 </div>
@@ -78,6 +88,10 @@
     let isResizing = false;
 
     const minHeight = 100; // Minimum height for both panels
+
+    // Variables to store the height ratios
+    let topHeightRatio = topPanel.offsetHeight / window.innerHeight;
+    let bottomHeightRatio = bottomPanel.offsetHeight / window.innerHeight;
 
     resizer.addEventListener('mousedown', (e) => {
         isResizing = true;
@@ -98,6 +112,10 @@
         if (topHeight + bottomHeight + resizer.offsetHeight <= totalHeight) {
             topPanel.style.flex = `0 0 ${topHeight}px`;
             bottomPanel.style.flex = `0 0 ${bottomHeight}px`;
+
+            // Update the height ratios
+            topHeightRatio = topHeight / totalHeight;
+            bottomHeightRatio = bottomHeight / totalHeight;
         }
     });
 
@@ -107,6 +125,18 @@
             document.body.style.cursor = 'default';
             overlay.style.display = 'none'; // Hide overlay when resizing stops
         }
+    });
+
+    // Adjust panel heights when the window is resized
+    window.addEventListener('resize', () => {
+        const totalHeight = window.innerHeight;
+
+        // Recalculate heights based on stored ratios
+        const topHeight = Math.max(minHeight, totalHeight * topHeightRatio);
+        const bottomHeight = Math.max(minHeight, totalHeight * bottomHeightRatio);
+
+        topPanel.style.flex = `0 0 ${topHeight}px`;
+        bottomPanel.style.flex = `0 0 ${bottomHeight}px`;
     });
 </script>
 

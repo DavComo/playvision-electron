@@ -1,5 +1,0 @@
-boto3==1.34.11
-botocore==1.34.11
-requests==2.31.0
-psutil==5.9.7
-netifaces==0.11.0
