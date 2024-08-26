@@ -67,6 +67,7 @@ body {
 .previews-container {
     display: grid;
     justify-content: center;
+    position: relative;
 }
 
 .previews-image-container {
@@ -97,6 +98,14 @@ body {
     align-items: center;
     margin-top: -20px;
 }
+
+@keyframes blink {
+    0% { border: 2px solid red;}
+    49% { border: 2px solid red;}
+    50% { border: 2px solid rgb(25, 27, 38);}
+    100% { border: 2px solid rgb(25, 27, 38);}
+}
+
 
 .previews-container b {
     margin-bottom: 10px;
@@ -251,7 +260,7 @@ body {
     transform: rotate(-45deg);
     -webkit-transform: rotate(-45deg);
     top: 220px;
-    left: 500px;
+    left: calc(50% - 55px);
     animation: breathe 1s infinite;
 }
 
@@ -259,7 +268,7 @@ body {
     transform: rotate(135deg);
     -webkit-transform: rotate(135deg);
     top: 150px;
-    left: 542px;
+    left: calc(50% - 15px);
     animation: breathe 1s infinite;
     animation-delay: 0.5s;
 }
@@ -271,9 +280,9 @@ body {
 
 #streamStatsContainer {
     margin-top: 5px;
-    margin-left: 35px;
     display: flex;
     flex-direction: row;
+    justify-content: center;
 }
 
 #streamStatsContainer.segment:last-child {
@@ -315,17 +324,9 @@ body {
     filter: grayscale(100%);
 }
 
-.segment {
-    background-color: transparent/*#377d39*/;
-    width: 14px;
-}
-
-.filled {
-    background-color: red;
-}
-
-.segment:last-child {
-    margin-right: 0;
+#segment {
+    width: 0%;
+    background: linear-gradient(90deg, green 0px, green 23px, orange 27px, orange 73px, red 77px, red 100%);;
 }
 
 #droppedFramesStats {
@@ -364,4 +365,52 @@ body {
     border: none;
     border-radius: 3px;
     font-size: 15px;
+}
+
+#scenePreviewContainer {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(25, 27, 38);
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#scenePreviewContainer img {
+    width: 256px;
+    height: 144px;
+    background-color: black;
+    border-radius: 5px;
+    margin-left: 10px;
+    border: 2px solid rgb(25, 27, 38);
+    cursor: pointer;
+}
+
+#scenePreviewContainer img::after {
+    content: "Preview Unavailable";
+    color: white;
+    font-size: 20px;
+    text-align: center;
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: -80px;
+}
+
+#scenePreviewContainer .preview {
+    border: 2px solid green;
+}
+
+#scenePreviewContainer .program {
+    border: 2px solid red;
+}
+
+#scenePreviewContainer img:first-child {
+    margin-left: 0;
 }

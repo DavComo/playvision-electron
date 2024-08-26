@@ -13,17 +13,6 @@ var schools = [];
 var dynamodb;
 var dynamoClient;
 var docDataTempTemp;
-var music = {};
-var musicTotalTime = 0;
-
-function indexMusic() {
-    for (var i = 0; i < window.music['order'].length; i++) {
-        var audio = new Audio('http://localhost:5500/Music/startingSoon/' + window.music['order'][i]);
-        audio.addEventListener('loadedmetadata', function() {
-           window.music['totalTimeSeconds'] += this.duration;
-        });
-    }
-}
 
 function fetchData() {
     const params = {
@@ -57,30 +46,6 @@ function init() {
     dynamodb = new AWS.DynamoDB();
     dynamoClient = new AWS.DynamoDB.DocumentClient();
 
-    window.music = {
-        "totalTimeSeconds" : 1280,
-        "order" : [
-            "HardToMoveOn",
-            "ForgetYou",
-            "BeStrong",
-            "ForeverAgain",
-            "FeelSoAlive",
-            "TinDistortion",
-            "Venture"
-        ],
-        "lengths" : [
-            182, //21:20
-            183, //18:18
-            200, //15:15
-            122, //11:55
-            189, //9:53
-            209, //6:44
-            195 //3:15
-        ]
-    };
-
-    //indexMusic();
-    console.log(window.music['totalTimeSeconds']);
     fetchData();
 };
 
@@ -97,11 +62,6 @@ async function updateData() {
     for (var index = 0; index < docDataTempTemp.length; index++) {
         var indexkey = docDataTempTemp[index].valueId.S;
         docDataTemp[indexkey] = docDataTempTemp[index];
-    }
-
-    if (docDataTemp['startingSoon']['targetTimeMs'].S != docData['targetTimeMs']) {
-        window.songsPlaying = false;
-        document.getElementById(window.music['order'][currentSongIndex]).pause();
     }
 
     docData = {
@@ -206,56 +166,6 @@ function rgbToHex(r, g, b) {
   return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
-var currentSongIndex = 0;
-var songsPlaying = false;
-
-function playAudio(timeLeftSec) {
-    return new Promise(res=>{
-        var lengthTime = window.music['totalTimeSeconds'];
-        for (var i = 0; i < window.music['lengths'].length; i++) {
-            if (lengthTime <= timeLeftSec) {
-                currentSongIndex = i;
-                break;
-            } else {
-                lengthTime -= window.music['lengths'][i];
-            }
-        }
-        if (lengthTime < timeLeftSec) {
-            console.log("Song index: " + currentSongIndex + " | Time left: " + timeLeftSec + " | Length time: " + lengthTime);
-            window.songsPlaying = false;
-            return;
-        }
-        var audio = document.getElementById(window.music['order'][currentSongIndex])
-        if (!window.songsPlaying) {
-            window.songsPlaying = true;
-            console.log("Playing song: " + currentSongIndex);
-            audio.play()
-                .then(() => {
-                    console.log("Playing audio");
-                    window.songsPlaying = true;
-                })
-                .catch(error => {
-                    console.log("Error playing audio:", error);
-                    window.songsPlaying = false;
-                    res();
-                });
-
-            audio.onended = function() {
-                console.log("Song ended: " + currentSongIndex);
-                window.songsPlaying = false;
-                res()
-            }   
-        }
-    })
-}
-
-async function playSongs(timeLeftSec) {
-    if (window.songsPlaying || timeLeftSec == 0) {
-        return;
-    }
-    
-    await playAudio(timeLeftSec);
-}
 
 async function updateClocks() {
     while (clockUpdating) {
@@ -269,13 +179,6 @@ async function updateClocks() {
             var timeLeftSec = Math.floor(timeLeftMs / 1000 % 60);
             var timeLeftMin = Math.floor(timeLeftMs / 1000 / 60 % 60);
             document.getElementById('countdown').innerHTML = timeLeftMin + ':' + timeLeftSec.toString().padStart(2, '0');
-
-            if ((timeLeftSec + timeLeftMin * 60) == Math.ceil(window.music['totalTimeSeconds'])) {
-                //playSongs();
-                window.songsPlaying = true;
-            } else if ((timeLeftSec + timeLeftMin * 60) < Math.ceil(window.music['totalTimeSeconds']) && !window.songsPlaying) {
-                //playSongs(timeLeftSec + timeLeftMin * 60);
-            }
         }
 
         var now = new Date();

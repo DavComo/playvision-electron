@@ -3,6 +3,7 @@ const obs = new OBSWebSocket();
 
 let websocketConnected = false;
 let existingScenes = [];
+let lastUpdated = Infinity;
 
 async function connectOBS() {
     try {
@@ -28,7 +29,7 @@ async function setInitialValues() {
         liveSign.style.filter = "none";
         liveSign.innerText = "LIVE";
         document.getElementById('toggleStreamText').innerText = "Stop Stream";
-        document.getElementById('program').style.border = "2px solid red";
+        document.getElementById('program').style.animation = "blink 2s infinite";
         document.getElementById('droppedFramesBar').classList.remove('inactive');
         document.getElementById('streamingOutputDot').classList.remove('inactive');
         document.getElementById('congestion').classList.remove('inactive');
@@ -36,7 +37,7 @@ async function setInitialValues() {
         liveSign.style.filter = "grayscale(100%)";
         liveSign.innerText = "INACTIVE";
         document.getElementById('toggleStreamText').innerText = "Start Stream";
-        document.getElementById('program').style.border = "2px solid rgb(25, 27, 38)";
+        document.getElementById('program').style.animation = "none";
         document.getElementById('droppedFramesBar').classList.add('inactive');
         document.getElementById('streamingOutputDot').classList.add('inactive');
         document.getElementById('congestion').classList.add('inactive');
@@ -60,6 +61,21 @@ async function setInitialValues() {
 
     for (let i = 0; i < scenes.length; i++) {
         const scene = scenes[i];
+
+        let scenePreviewInstance = document.createElement('img');
+        
+        scenePreviewInstance.onclick = switchPreviewInstance;
+        scenePreviewInstance.id = scene.sceneName;
+        scenePreviewInstance.src = "";
+        if (scene.sceneName == response.currentPreviewSceneName) {
+            scenePreviewInstance.classList.add('preview');
+        }
+        if (scene.sceneName == response.currentProgramSceneName) {
+            scenePreviewInstance.classList.add('program');
+        }
+        if (document.getElementById('scenePreviewContainer').childElementCount <= 4) {document.getElementById('scenePreviewContainer').appendChild(scenePreviewInstance);}
+
+
         if (existingScenes.includes(scene.sceneName)) {
             continue;
         }
@@ -113,6 +129,11 @@ async function updatePreviews() {
     let screenshot = await getSceneScreenshot(response.sceneName);
     if (screenshot) {
         document.getElementById('preview').src = screenshot;
+        document.getElementById('preview').dataset.sceneName = response.sceneName;
+        
+        if (document.getElementById(response.sceneName)) {
+            document.getElementById(response.sceneName).src = screenshot;
+        }
     }
 
     response = await obs.call('GetCurrentProgramScene');
@@ -120,6 +141,24 @@ async function updatePreviews() {
     screenshot = await getSceneScreenshot(response.sceneName);
     if (screenshot) {
         document.getElementById('program').src = screenshot;
+        document.getElementById('program').dataset.sceneName = response.sceneName;
+
+        if (document.getElementById(response.sceneName)) {
+            document.getElementById(response.sceneName).src = screenshot;
+        }
+    }
+
+    if (lastUpdated >= 4) {
+        for (let i = 0; i < document.getElementById('scenePreviewContainer').childElementCount; i++) {
+            let scenePreviewInstance = document.getElementById('scenePreviewContainer').children[i];
+            screenshot = await getSceneScreenshot(scenePreviewInstance.id);
+            if (screenshot) {
+                scenePreviewInstance.src = screenshot;
+            }
+        }
+        lastUpdated = 0
+    } else {
+        lastUpdated += 1;
     }
 }
 
@@ -133,13 +172,7 @@ async function updateStats() {
     document.getElementById('droppedFramesStats').innerText = outputSkippedFrames + '/' + outputTotalFrames;
     document.getElementById('droppedFramesPercentage').innerText = percentageFramesMissed + '%';
 
-    const numOfSegments = Math.floor(percentageFramesMissed / 10);
-    for (let i = 0; i < 10; i++) {
-        document.getElementById('droppedFramesBar').children[i].classList.remove('filled')
-    }
-    for (let i = 0; i < numOfSegments; i++) {
-        document.getElementById('droppedFramesBar').children[i].classList.add('filled')
-    }
+    document.getElementById('segment').style.width = percentageFramesMissed + '%';
 
     document.getElementById('streamingDurationTimer').innerText = new Date(response.outputDuration).toISOString().substr(11, 8);
 
@@ -188,7 +221,7 @@ obs.on('StreamStateChanged', (data) => {
         liveSign.innerText = "LIVE";
         document.getElementById('droppedFramesBar').classList.remove('inactive');
         document.getElementById('streamingOutputDot').classList.remove('inactive');
-        document.getElementById('program').style.border = "2px solid red";
+        document.getElementById('program').style.animation = "blink 2s infinite";
         document.getElementById('congestion').classList.remove('inactive');
     } else if (data.outputState == 'OBS_WEBSOCKET_OUTPUT_STOPPED') {
         document.getElementById('toggleStreamText').innerText = "Start Stream";
@@ -196,7 +229,7 @@ obs.on('StreamStateChanged', (data) => {
         liveSign.innerText = "INACTIVE";
         document.getElementById('droppedFramesBar').classList.add('inactive');
         document.getElementById('streamingOutputDot').classList.add('inactive');
-        document.getElementById('program').style.border = "2px solid rgb(25, 27, 38)";
+        document.getElementById('program').style.animation = "none";
         document.getElementById('congestion').classList.add('inactive');
     }
 })
@@ -234,6 +267,11 @@ obs.on('CurrentPreviewSceneChanged', (data) => {
         document.getElementsByClassName('selectedPreview')[0].classList.remove('selectedPreview');
     }
     document.querySelector(`[data-scene-uuid="${data.sceneUuid}"]`).classList.add('selectedPreview');
+    
+    if (document.getElementsByClassName('preview').length > 0) {
+        document.getElementsByClassName('preview')[0].classList.remove('preview');
+    }
+    document.getElementById(data.sceneName).classList.add('preview');
 })
 
 obs.on('CurrentProgramSceneChanged', (data) => {
@@ -242,6 +280,11 @@ obs.on('CurrentProgramSceneChanged', (data) => {
         document.getElementsByClassName('selectedProgram')[0].classList.remove('selectedProgram');
     }
     document.querySelector(`[data-scene-uuid="${data.sceneUuid}"]`).classList.add('selectedProgram');
+
+    if (document.getElementsByClassName('program').length > 0) {
+        document.getElementsByClassName('program')[0].classList.remove('program');
+    }
+    document.getElementById(data.sceneName).classList.add('program');
 })
 
 obs.on('CurrentSceneTransitionChanged', (data) => {
@@ -300,4 +343,25 @@ window.changeTransition = async function () {
     obs.call('SetCurrentSceneTransition', {
         transitionName: document.getElementById('transitionOptions').selectedOptions[0].innerText
     });
+}
+
+window.switchPreviewInstance = async function () {
+    this.id = existingScenes[(existingScenes.indexOf(this.id) + 1) % existingScenes.length];
+    if (Array.from(this.classList).includes('preview')) {
+        this.classList.remove('preview');
+    }
+    if (Array.from(this.classList).includes('program')) {
+        this.classList.remove('program');
+    }
+
+    
+    if (document.getElementsByClassName('preview').length > 0) {
+        document.getElementsByClassName('preview')[0].classList.remove('preview');
+    }
+    document.getElementById(document.getElementById('preview').dataset.sceneName).classList.add('preview');
+
+    if (document.getElementsByClassName('program').length > 0) {
+        document.getElementsByClassName('program')[0].classList.remove('program');
+    }
+    document.getElementById(document.getElementById('program').dataset.sceneName).classList.add('program');
 }

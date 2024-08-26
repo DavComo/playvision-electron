@@ -2,9 +2,9 @@
 <html>
     <head>
         <link rel="stylesheet" href="./obsController.css">
+        <script type="module" src="./preferences.js"></script>
         <script src="https://kit.fontawesome.com/09366b7489.js" crossorigin="anonymous"></script>
         <script type="module" src="./obsController.js"></script>
-        <script type="module" src="./node_modules/obs-websocket-js/dist/obs-ws.min.js"></script>
     </head>
     <body>
         <div id="error-box" class="hidden">
@@ -13,9 +13,9 @@
         </div>
         <div id="body" class="blur">
             <div style="display: flex; flex-direction: row; justify-content: space-evenly;">
-                <p class="arrow left hidden" id="transitionArrowLeft"></p>
-                <p class="arrow right hidden" id="transitionArrowRight"></p>
                 <div class="previews-container">
+                    <p class="arrow left hidden" id="transitionArrowLeft"></p>
+                    <p class="arrow right hidden" id="transitionArrowRight"></p>
                     <div style="width: 1069px;">
                         <b style="margin-top: auto;">Preview</b>
                         <b style="margin-bottom: 20px; font-size: 35px; color: rgb(226, 20, 60)" id="liveSign">Connecting</b>
@@ -23,7 +23,7 @@
                     </div>
                     <div class="previews-image-container">
                         <img id="preview" alt=" " style="grid-row: 2; grid-column: 1; border: 2px solid green;"/>
-                        <img id="program" alt=" " style="grid-row: 2; grid-column: 2; border: 2px solid red;"/>
+                        <img id="program" alt=" " style="grid-row: 2; grid-column: 2; border: 2px solid rgb(25, 27, 38);"/>
                     </div>
                 </div>
                 <div class="toggle-stream-container">
@@ -41,26 +41,17 @@
                     <b class="stat-title">Dropped Frames</b>
                     <div style="display: flex; flex-direction: row; align-items: center;">
                         <div class="progress-bar" id="droppedFramesBar">
-                            <div class="segment"></div>
-                            <div class="segment"></div>
-                            <div class="segment"></div>
-                            <div class="segment"></div>
-                            <div class="segment"></div>
-                            <div class="segment"></div>
-                            <div class="segment"></div>
-                            <div class="segment"></div>
-                            <div class="segment"></div>
-                            <div class="segment"></div>
+                            <div id="segment"></div>
                         </div>
                         <div style="display: flex; flex-direction: column; align-items: center;">
-                            <b id="droppedFramesStats">91/200</b>
-                            <b id="droppedFramesPercentage">45.5%</b>
+                            <b id="droppedFramesStats">0/0</b>
+                            <b id="droppedFramesPercentage">0%</b>
                         </div>
                     </div>
                 </div>
                 <div class="stream-stat" style="padding-top: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly;">
                     <div style="display: flex; flex-direction: row; align-items: center;">
-                        <i class="fa-solid fa-arrows-up-to-line" style="color: red; font-size: 10px; margin-right: 5px;" id="streamingOutputDot"></i>
+                        <i class="fa-solid fa-cloud-arrow-up" style="color: red; font-size: 10px; margin-right: 5px;" id="streamingOutputDot"></i>
                         <b class="duration-timer" id="streamingDurationTimer">00:00:00</b>
                     </div>
                     <div style="display: flex; flex-direction: row; align-items: center;">
@@ -81,6 +72,8 @@
                         </select>
                     </div>
                 </div>
+            </div>
+            <div id="scenePreviewContainer">
             </div>
         </div>
     </body>

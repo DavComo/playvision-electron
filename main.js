@@ -2,7 +2,28 @@ const { app, BrowserWindow, Menu, ipcMain} = require('electron');
 const path = require('path');
 const url = require('url');
 const express = require('express');
-const { updateElectronApp, UpdateSourceType } = require('update-electron-app')
+const { updateElectronApp, UpdateSourceType } = require('update-electron-app');
+const Store = require('electron-store');
+
+
+const defaultSchema = {
+};
+
+const store = new Store();
+if (store.get('config') === undefined) {
+    store.set('config', defaultSchema);
+}
+
+ipcMain.handle('electron-store-get-data', (event, key) => {
+    console.log(`Fetching key: ${key}`);
+    const result = store.get(key);
+    console.log(`Result fetched from store: ${result}`);
+    return result;
+});
+
+ipcMain.on('electron-store-set-data', (event, key, value) => {
+    store.set(key, value);
+});
 
 let pythonProcess;
 
@@ -19,7 +40,7 @@ function createWindow() {
     });
 
     let win = new BrowserWindow({
-        width: 1200,
+        width: 1280,
         height: 800,
         frame: true,
         title: 'PlayVision - Control Panel',
@@ -130,7 +151,30 @@ function createWindow() {
                     win.show();
                 }
             },
-            {label: 'Unset'}
+            {label: 'Show Addresses', 
+                click: async () => {
+                    const addressWindow = new BrowserWindow({
+                        width: 750,
+                        height: 500,
+                        webPreferences: {
+                            preload: path.join(__dirname, 'preload.js'),
+                            nodeIntegration: true
+                        },
+                        show: false,
+                        title: "PlayVision - Overlay Addresses"
+                    }); 
+                    addressWindow.loadURL(url.format({
+                        pathname: path.join(__dirname, './addressWindow.html'),
+                        protocol: 'file:',
+                        slashes: true
+                    }), {"extraHeaders" : "pragma: no-cache\n"});
+                
+                
+                    addressWindow.once('ready-to-show', () => {
+                        addressWindow.show();
+                    });
+                }
+            }
         ]
     },
     {
@@ -160,12 +204,6 @@ function createWindow() {
             }}
         ]
     }]
-
-
-    /*const executablePath = path.join(__dirname, process.platform === 'win32' ? 'run.exe' : 'run');
-    console.log(`Starting Python script: ${executablePath}`);
-
-    pythonProcess = spawn(executablePath);*/
 
     loadingWindow.close();
 
