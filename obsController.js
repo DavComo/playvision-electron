@@ -7,10 +7,7 @@ let lastUpdated = Infinity;
 
 async function connectOBS() {
     try {
-        let url = 'ws://' + await window.myStore.get('obsServerIp') + ':' + await window.myStore.get('obsPort');
-        let pswd = await window.myStore.get('obsAuthenticationEnabled') ? await window.myStore.get('obsAuthenticationPassword') : null;
-        console.log("Attempting to connect to OBS WebSocket at " + url + "; with password " + pswd);
-        await obs.connect(url, pswd);
+        await obs.connect();
         websocketConnected = true;
         document.getElementById('body').classList.remove('blur');
         document.getElementById('error-box').classList.add('hidden');
@@ -78,13 +75,6 @@ async function setInitialValues() {
         }
         if (document.getElementById('scenePreviewContainer').childElementCount <= 4) {document.getElementById('scenePreviewContainer').appendChild(scenePreviewInstance);}
 
-        for (let i = 0; i < document.getElementById('scenePreviewContainer').childElementCount; i++) {
-            let scenePreviewInstance = document.getElementById('scenePreviewContainer').children[i];
-            let elementId = await window.myStore.get('previewInstance#' + i);
-            if (elementId) {
-                scenePreviewInstance.id = elementId;
-            }
-        }
 
         if (existingScenes.includes(scene.sceneName)) {
             continue;
@@ -313,7 +303,7 @@ function announceBrokenConnection() {
     document.getElementById('body').classList.add('blur');
     document.getElementById('error-box').classList.remove('hidden');
     document.getElementById('error-title').innerText = "Error connecting to OBS";
-    document.getElementById('error-message').innerHTML = 'PlayVision cannot connect to OBS Websocket, please fix before using OBS Control. Ensure OBS is running, webhook settings are set correctly, and OBS Websocket is <a style="cursor: help;" href="https://obsproject.com/kb/remote-control-guide">turned on.</a> Please refresh with Cmd+R or Ctrl+R after fixing the issue.';
+    document.getElementById('error-message').innerHTML = 'Make sure OBS is running and the WebSocket server is enabled"PlayVision cannot connect to OBS Websocket, please fix before using OBS Control. Ensure OBS is running on port 4455 without a password, and OBS Websocket is <a style="cursor: help;" href="https://obsproject.com/kb/remote-control-guide">turned on.</a> Please refresh with Cmd+R or Ctrl+R after fixing the issue.';
 }
 
 window.toggleStream = async function () {
@@ -357,8 +347,6 @@ window.changeTransition = async function () {
 
 window.switchPreviewInstance = async function () {
     this.id = existingScenes[(existingScenes.indexOf(this.id) + 1) % existingScenes.length];
-    let elementIndex = Array.from(this.parentElement.children).indexOf(this);
-    window.myStore.set('previewInstance#' + elementIndex, this.id);
     if (Array.from(this.classList).includes('preview')) {
         this.classList.remove('preview');
     }

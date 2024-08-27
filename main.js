@@ -15,7 +15,9 @@ if (store.get('config') === undefined) {
 }
 
 ipcMain.handle('electron-store-get-data', (event, key) => {
+    console.log(`Fetching key: ${key}`);
     const result = store.get(key);
+    console.log(`Result fetched from store: ${result}`);
     return result;
 });
 
@@ -44,7 +46,6 @@ function createWindow() {
         title: 'PlayVision - Control Panel',
         titleBarStyle: 'hiddenInset',
         webPreferences: {
-            zoomFactor: 0.9,
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true, // Required for using contextBridge
             nodeIntegration: true, 
@@ -70,49 +71,15 @@ function createWindow() {
     const template = [{
         label: 'app.name',
         submenu: [
-        {role: 'reload'},
-        {role: 'forceReload'},
-        {type: 'separator'},
-        {label: 'Preferences...', 
-            accelerator: 'CmdOrCtrl+,',
-            click: async () => {
-                const settingsWindow = new BrowserWindow({
-                    resizable: false,
-                    width: 750,
-                    height: 500,
-                    webPreferences: {
-                        preload: path.join(__dirname, 'preload.js'),
-                        nodeIntegration: true
-                    },
-                    show: false,
-                    title: "PlayVision - Overlay Settings"
-                }); 
-                settingsWindow.loadURL(url.format({
-                    pathname: path.join(__dirname, './settingsWindow.html'),
-                    protocol: 'file:',
-                    slashes: true
-                }), {"extraHeaders" : "pragma: no-cache\n"});
-            
-            
-                settingsWindow.once('ready-to-show', () => {
-                    settingsWindow.show();
-                });
-
-                settingsWindow.on('maximize', () => {
-                    settingsWindow.unmaximize()
-                });
-            }
-        },
-        {role: 'toggleDevTools'},
-        {type: 'separator'},
-        {role: 'quit'},
+        { role: 'reload' },
+        { role: 'forceReload' },
+        { role: 'toggleDevTools' },
         ]
     },
     {
         label: 'Pages',
         submenu: [
             {label: 'Show Previews',
-                accelerator: 'CmdOrCtrl+P',
                 click: async () => {
                     const previewLoading = new BrowserWindow({
                         width: 300,
@@ -174,8 +141,7 @@ function createWindow() {
                     });
                 }
             },
-            {label: 'Show Controller',
-                accelerator: 'CmdOrCtrl+O',
+            {label: 'Show Controllers',
                 click: async () => {                    
                     if (win.isVisible()) {
                         win.focus();
@@ -184,6 +150,30 @@ function createWindow() {
 
                     win.show();
                 }
+            },
+            {label: 'Show Addresses', 
+                click: async () => {
+                    const addressWindow = new BrowserWindow({
+                        width: 750,
+                        height: 500,
+                        webPreferences: {
+                            preload: path.join(__dirname, 'preload.js'),
+                            nodeIntegration: true
+                        },
+                        show: false,
+                        title: "PlayVision - Overlay Addresses"
+                    }); 
+                    addressWindow.loadURL(url.format({
+                        pathname: path.join(__dirname, './addressWindow.html'),
+                        protocol: 'file:',
+                        slashes: true
+                    }), {"extraHeaders" : "pragma: no-cache\n"});
+                
+                
+                    addressWindow.once('ready-to-show', () => {
+                        addressWindow.show();
+                    });
+                }
             }
         ]
     },
@@ -191,11 +181,10 @@ function createWindow() {
         label: 'View', 
         submenu: [
             {role: 'toggleFullscreen'},
-            {role: 'zoomIn'},
-            {role: 'zoomOut'},
-            {role: 'resetZoom', label: 'Reset Zoom'},
+            {label: 'Zoom In', accelerator: 'CmdOrCtrl+=', click: () => {win.webContents.zoomFactor += 0.1}},
+            {label: 'Zoom Out', accelerator: 'CmdOrCtrl+-', click: () => {win.webContents.zoomFactor -= 0.1}},
             {type: 'separator'},
-            {label: 'OBS Control', type: 'checkbox', accelerator: 'CmdOrCtrl+1', checked: true, click: (menuItem) => {
+            {label: 'OBS Control', type: 'checkbox', checked: true, click: (menuItem) => {
                 const checked = menuItem.checked
                 if (checked == false && bottomPanelHidden) {
                     menuItem.checked = true
@@ -204,7 +193,7 @@ function createWindow() {
                 win.webContents.send('toggle-window', "top-panel", checked)
                 topPanelHidden = !checked
             }},
-            {label: 'Overlay Control', type: 'checkbox', accelerator: 'CmdOrCtrl+2',  checked: true, click: (menuItem) => {
+            {label: 'Overlay Control', type: 'checkbox', checked: true, click: (menuItem) => {
                 const checked = menuItem.checked
                 if (checked == false && topPanelHidden) {
                     menuItem.checked = true
@@ -274,12 +263,14 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', () => {
+    console.log("Before quit application");
     if (pythonProcess) {
         pythonProcess.kill();
     }
 });
 
 app.on('activate', () => {
+    console.log(BrowserWindow.getAllWindows());
     if (BrowserWindow.getAllWindows().length === 0) {
         createWindow();
     }
@@ -287,6 +278,7 @@ app.on('activate', () => {
 
 // Force close the application when quitting
 app.on('quit', () => {
+    console.log("Quitting application");
     if (pythonProcess) {
         pythonProcess.kill();
     }

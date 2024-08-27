@@ -12,14 +12,8 @@ window.saveValue = async function (value, key, element) {
     }
     await window.myStore.set(key, value)
 
-    if (element.id == 'toggleAuthentication') {
-        if (value) {
-            document.getElementById('authenticationPassword').disabled = false
-            document.getElementById('authenticationPassword').parentElement.classList.remove('disabled')
-        } else {
-            document.getElementById('authenticationPassword').disabled = true
-            document.getElementById('authenticationPassword').parentElement.classList.add('disabled')
-        }
+    if (element.id = 'toggleAuthentication') {
+        
     }
 }
 

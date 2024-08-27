@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./settingsWindow.css">
-    <script src="./settingsWindow.js"></script>
+    <link rel="stylesheet" href="./addressWindow.css">
+    <script src="addressWindow.js"></script>
 </head>
 <body>
     <div id="categoryList">
@@ -32,20 +32,20 @@
             <b class="category-name first-name">Basic</b>
             <div class="setting-option-container">
                 <b>Webhook Port</b>
-                <input type="text" id="portNumber" name="portSetting" maxlength="5" pattern="\d*" style="width: 35%;" onfocusout="saveValue(this.value, 'obsPort', this)">
+                <input type="text" id="portNumber" name="portSetting" maxlength="5" pattern="\d*" style="width: 150px;" onfocusout="saveValue(this.value, 'obsPort', this)">
             </div>
             <b class="category-name">Advanced</b>
             <div class="setting-option-container">
                 <b>Enable Authentication</b>
-                <input type="checkbox" id="toggleAuthentication" name="toggleAuthentication" style="height: 100%; width: 7%;" onclick="saveValue(this.checked, 'obsAuthenticationEnabled', this)">
+                <input type="checkbox" id="toggleAuthentication" name="toggleAuthentication" style="width: 30px;" onclick="saveValue(this.checked, 'obsAuthenticationEnabled', this)">
             </div>
             <div class="setting-option-container">
                 <b>Password</b>
-                <input type="text" id="authenticationPassword" name="authenticationPassword" maxlength="12" style="width: 45%;" onfocusout="saveValue(this.value, 'obsAuthenticationPassword', this)">
+                <input type="text" id="authenticationPassword" name="authenticationPassword" maxlength="12" style="width: 200px;" onfocusout="saveValue(this.value, 'obsAuthenticationPassword', this)">
             </div>
             <div class="setting-option-container">
                 <b>Server I.P.</b>
-                <input type="text" id="serverIP" name="serverIP" maxlength="15" pattern="^(localhost|((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9]))$" style="width: 50%;"  onfocusout="saveValue(this.value, 'obsServerIp', this)">
+                <input type="text" id="serverIP" name="serverIP" maxlength="15" pattern="^(localhost|((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9]))$" style="width: 170px;"  onfocusout="saveValue(this.value, 'obsServerIp', this)">
             </div>
         </div>
         <div id="feedback" class="setting-category">
