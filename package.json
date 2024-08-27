@@ -6,7 +6,8 @@
 	"main": "main.js",
 	"scripts": {
 		"start": "electron .",
-		"build": "electron-builder --mac"
+		"build": "electron-builder --mac",
+		"test": "node tests.js"
 	},
 	"devDependencies": {
 		"electron": "^31.3.1",
