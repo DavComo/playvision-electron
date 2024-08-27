@@ -1,0 +1,109 @@
+html {
+    height: 100%;
+}
+
+body {
+    background-color: rgb(79, 83, 94);
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    margin: 0;
+}
+
+#categoryList {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 30%;
+    background-color: rgb(239, 239, 239);
+}
+
+.category-tab {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    font-family: sans-serif;
+    font-size: 3vw;
+    height: 8%;
+    padding-left: 10px;
+    border-bottom: 0.5px solid rgb(153, 153, 153);
+}
+
+.category-tab.active {
+    background-color: rgb(193, 193, 193);
+}
+
+#settingContainer {
+    background-color: rgb(239, 239, 239);
+    height: calc(100% - 30px); 
+    width: calc(70% - 30px); 
+    margin: 15px;
+    margin-top: auto; 
+    margin-bottom: auto; 
+    margin-left: auto; 
+    margin-right: auto; 
+    border-radius: 17px; 
+    display: flex; 
+    flex-direction: column;
+}
+
+.setting-category {
+    display: none;
+    flex-direction: column;
+}
+
+#settingContainer .active {
+    display: flex;
+}
+
+.setting-category .first-name {
+    margin-top: 10px;
+}
+
+.category-name {
+    margin-top: 20px;
+    font-family: sans-serif;
+    font-size: 2vw;
+    font-weight: 400;
+    margin-left: 20px;
+    margin-bottom: 5px;
+}
+
+.setting-option-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 35px;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.setting-option-container b {
+    font-family: sans-serif;
+    font-size: 3.5vw;
+    font-weight: 400;
+    margin-right: 10px;
+    margin-top: 0px;
+}
+
+.setting-option-container input {
+    font-family: sans-serif;
+    font-size: 4vw;
+    height: 65%;
+    border-radius: 5px;
+    border: 1px solid rgb(153, 153, 153);
+    background-color: rgb(204, 204, 204);
+    padding: 5px;
+    text-align: center;
+    margin-right: 25px;
+}
+
+.setting-option-container input:invalid {
+    box-shadow: inset 0px 0px 2px 2px red;
+}
+
+.disabled {
+    pointer-events: none;
+    filter: blur(1px);
+}
+

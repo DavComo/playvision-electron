@@ -8,13 +8,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
 contextBridge.exposeInMainWorld('myStore', {
     get: async (key) => {
-        console.log(`Requesting key: ${key}`);
         const value = await ipcRenderer.invoke('electron-store-get-data', key);
-        console.log(`Value returned from ipcRenderer.invoke: ${value}`);
         return value;
     },
     set: (key, value) => {
-        console.log(`Setting key: ${key} with value: ${value}`);
         ipcRenderer.send('electron-store-set-data', key, value);
     }
 });
