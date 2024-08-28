@@ -6,11 +6,15 @@
 	"main": "main.js",
 	"scripts": {
 		"start": "electron .",
-		"build": "electron-builder --mac",
+		"buildAll": "electron-builder --mac --windows --linux",
+		"buildWin": "electron-builder --windows",
+		"buildMac": "electron-builder --mac",
+		"buildLinux": "electron-builder --linux",
 		"test": "node tests.js"
 	},
 	"devDependencies": {
 		"electron": "^31.3.1",
+		"electron-builder": "^24.13.3",
 		"electron-packager": "^17.1.2"
 	},
 	"dependencies": {
@@ -20,6 +24,7 @@
 		"update-electron-app": "^3.0.0"
 	},
 	"build": {
+		"publish": null,
 		"appId": "com.playvision.playvisionApp",
 		"productName": "PlayVision",
 		"files": [
@@ -68,11 +73,27 @@
 				{
 					"target": "nsis",
 					"arch": [
-						"x64"
+						"arm64"
 					]
 				}
 			],
 			"icon": "build/logo.ico"
+		},
+		"nsis": {
+			"oneClick": false,
+			"perMachine": false,
+			"allowToChangeInstallationDirectory": true
+		},
+		"linux": {
+			"target": [
+				{
+					"target": "AppImage",
+					"arch": [
+						"arm64"
+					]
+				}
+			],
+			"icon": "build/logo.png"
 		}
 	}
 }
