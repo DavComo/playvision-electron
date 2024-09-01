@@ -249,10 +249,8 @@ app.whenReady().then(() => {
         res.sendFile(path.join(__dirname, 'Renderer', 'football', 'teamScores', 'main.html'));
     });
 
-    // Serve other files normally
     expressApp.use(express.static(path.join(__dirname)));
 
-    // TODO
     expressApp.listen(port, () => {
         console.log(`Server is running at http://localhost:${port}`);
     }).on('error', (err) => {
