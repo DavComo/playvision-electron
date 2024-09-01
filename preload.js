@@ -1,4 +1,5 @@
 const { contextBridge, ipcRenderer } = require('electron');
+const OBSWebSocket = require('obs-websocket-js').default;
 
 // Expose a secure API to the renderer process
 contextBridge.exposeInMainWorld('electronAPI', {
@@ -17,4 +18,14 @@ contextBridge.exposeInMainWorld('myStore', {
         console.log(`Setting key: ${key} with value: ${value}`);
         ipcRenderer.send('electron-store-set-data', key, value);
     }
+});
+
+const obs = new OBSWebSocket;
+contextBridge.exposeInMainWorld('obs', {
+    connect: (url) => obs.connect(url),
+    on: (event, callback) => obs.on(event, callback),
+    disconnect: () => obs.disconnect(),
+    send: (requestType, args) => obs.send(requestType, args),
+    getSocket: () => obs,
+    call: (requestType, args) => obs.call(requestType, args)
 });

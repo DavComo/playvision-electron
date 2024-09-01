@@ -13,6 +13,5 @@ function toggleWindow(windowId, checked) {
 
 // Listen for IPC messages from the main process
 window.electronAPI.onToggleWindow((windowId, checked) => {
-    console.log("Hello")
     toggleWindow(windowId, checked);
 });

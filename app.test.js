@@ -5,7 +5,7 @@ const path = require('path');
 describe('All installer files exist suite', () => {
 
   //Disable test in accordance with github actions using Ubuntu only
-  test.skip('.dmg installer file exists test', done => {
+  test('.dmg installer file exists test', done => {
     try {
       fs.stat("./dist/", (err, stats) => {
         const distPath = path.join(__dirname, 'dist');
@@ -44,7 +44,7 @@ describe('All installer files exist suite', () => {
     }
   });
 
-  test('.AppImage installer file exists test', done => {
+  test.skip('.AppImage installer file exists test', done => {
     try {
       fs.stat("./dist/", (err, stats) => {
         const distPath = path.join(__dirname, 'dist'); 

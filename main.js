@@ -73,6 +73,29 @@ function createWindow() {
         submenu: [
         { role: 'reload' },
         { role: 'forceReload' },
+        {type: 'separator'},
+        {label: 'Preferences...', accelerator: 'CmdOrCtrl+,', click: async () => {
+            const addressWindow = new BrowserWindow({
+                width: 750,
+                height: 500,
+                webPreferences: {
+                    preload: path.join(__dirname, 'preload.js'),
+                    nodeIntegration: true
+                },
+                show: false,
+                title: "PlayVision - Overlay Addresses"
+            }); 
+            addressWindow.loadURL(url.format({
+                pathname: path.join(__dirname, './addressWindow.html'),
+                protocol: 'file:',
+                slashes: true
+            }), {"extraHeaders" : "pragma: no-cache\n"});
+        
+        
+            addressWindow.once('ready-to-show', () => {
+                addressWindow.show();
+            });}},
+        {type: 'separator'},
         { role: 'toggleDevTools' },
         ]
     },
@@ -151,40 +174,18 @@ function createWindow() {
                     win.show();
                 }
             },
-            {label: 'Show Addresses', 
-                click: async () => {
-                    const addressWindow = new BrowserWindow({
-                        width: 750,
-                        height: 500,
-                        webPreferences: {
-                            preload: path.join(__dirname, 'preload.js'),
-                            nodeIntegration: true
-                        },
-                        show: false,
-                        title: "PlayVision - Overlay Addresses"
-                    }); 
-                    addressWindow.loadURL(url.format({
-                        pathname: path.join(__dirname, './addressWindow.html'),
-                        protocol: 'file:',
-                        slashes: true
-                    }), {"extraHeaders" : "pragma: no-cache\n"});
-                
-                
-                    addressWindow.once('ready-to-show', () => {
-                        addressWindow.show();
-                    });
-                }
-            }
         ]
     },
     {
         label: 'View', 
         submenu: [
             {role: 'toggleFullscreen'},
+            {type: 'separator'},
             {label: 'Zoom In', accelerator: 'CmdOrCtrl+=', click: () => {win.webContents.zoomFactor += 0.1}},
             {label: 'Zoom Out', accelerator: 'CmdOrCtrl+-', click: () => {win.webContents.zoomFactor -= 0.1}},
+            {label: 'Reset Zoom', accelerator: 'CmdOrCtrl+0', click: () => win.webContents.zoomFactor = 1},
             {type: 'separator'},
-            {label: 'OBS Control', type: 'checkbox', checked: true, click: (menuItem) => {
+            {label: 'OBS Control', accelerator: 'CmdOrCtrl+1', type: 'checkbox', checked: true, click: (menuItem) => {
                 const checked = menuItem.checked
                 if (checked == false && bottomPanelHidden) {
                     menuItem.checked = true
@@ -193,7 +194,7 @@ function createWindow() {
                 win.webContents.send('toggle-window', "top-panel", checked)
                 topPanelHidden = !checked
             }},
-            {label: 'Overlay Control', type: 'checkbox', checked: true, click: (menuItem) => {
+            {label: 'Overlay Control', accelerator: 'CmdOrCtrl+2', type: 'checkbox', checked: true, click: (menuItem) => {
                 const checked = menuItem.checked
                 if (checked == false && topPanelHidden) {
                     menuItem.checked = true
@@ -205,15 +206,15 @@ function createWindow() {
         ]
     }]
 
-    loadingWindow.close();
-
     win.loadURL(url.format({
         pathname: path.join(__dirname, './mainScreen.html'),
         protocol: 'file:',
         slashes: true
     }), {"extraHeaders" : "pragma: no-cache\n"});
 
-    win.once('ready-to-show', () => {
+    win.once('ready-to-show', async () => {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        loadingWindow.close();
         win.show();
         const menu = Menu.buildFromTemplate(template)
         Menu.setApplicationMenu(menu)
@@ -251,9 +252,15 @@ app.whenReady().then(() => {
     // Serve other files normally
     expressApp.use(express.static(path.join(__dirname)));
 
-    // Start the server
+    // TODO
     expressApp.listen(port, () => {
         console.log(`Server is running at http://localhost:${port}`);
+    }).on('error', (err) => {
+        if (err.code === 'EADDRINUSE') {
+            throw new Error(`Port ${port} is already in use. Please kill the process using this port or change the port in the code.`);
+        } else {
+            console.error(err);
+        }
     });
     createWindow();
 })
@@ -263,14 +270,12 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', () => {
-    console.log("Before quit application");
     if (pythonProcess) {
         pythonProcess.kill();
     }
 });
 
 app.on('activate', () => {
-    console.log(BrowserWindow.getAllWindows());
     if (BrowserWindow.getAllWindows().length === 0) {
         createWindow();
     }
@@ -278,7 +283,6 @@ app.on('activate', () => {
 
 // Force close the application when quitting
 app.on('quit', () => {
-    console.log("Quitting application");
     if (pythonProcess) {
         pythonProcess.kill();
     }

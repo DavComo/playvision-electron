@@ -25,12 +25,12 @@
         }
 
         #top-panel {
-            flex: 0 0 64%;
+            flex: 1 0 64%;
             min-height: 100px; /* Minimum height for top panel */
         }
 
         #bottom-panel {
-            flex: 0 0 35%;
+            flex: 1 0 35%;
             min-height: 100px; /* Minimum height for bottom panel */
         }
 
@@ -69,16 +69,16 @@
     </style>
 </head>
 <body>
-<div class="draggable-bar"></div>
-<div id="top-panel">
-    <iframe src="./obsControls.html"></iframe> <!-- Replace with your top panel content -->
-</div>
-<div id="resizer"></div>
-<div id="bottom-panel">
-    <iframe src="./Transmitter/main.html"></iframe> <!-- Replace with your bottom panel content -->
-</div>
+    <div class="draggable-bar"></div>
+    <div id="top-panel">
+        <iframe src="./obsControls.html" id="top-panel-iframe"></iframe> <!-- Replace with your top panel content -->
+    </div>
+    <div id="resizer"></div>
+    <div id="bottom-panel">
+        <iframe src="./Transmitter/main.html" id="bottom-panel-iframe"></iframe> <!-- Replace with your bottom panel content -->
+    </div>
 
-<div id="overlay" class="overlay"></div>
+    <div id="overlay" class="overlay"></div>
 
 <script>
     const resizer = document.getElementById('resizer');
@@ -110,8 +110,8 @@
         const bottomHeight = Math.max(minHeight, totalHeight - offset - resizer.offsetHeight);
 
         if (topHeight + bottomHeight + resizer.offsetHeight <= totalHeight) {
-            topPanel.style.flex = `0 0 ${topHeight}px`;
-            bottomPanel.style.flex = `0 0 ${bottomHeight}px`;
+            topPanel.style.flex = `1 0 ${topHeight}px`;
+            bottomPanel.style.flex = `1 0 ${bottomHeight}px`;
 
             // Update the height ratios
             topHeightRatio = topHeight / totalHeight;
@@ -135,8 +135,8 @@
         const topHeight = Math.max(minHeight, totalHeight * topHeightRatio);
         const bottomHeight = Math.max(minHeight, totalHeight * bottomHeightRatio);
 
-        topPanel.style.flex = `0 0 ${topHeight}px`;
-        bottomPanel.style.flex = `0 0 ${bottomHeight}px`;
+        topPanel.style.flex = `1 0 ${topHeight}px`;
+        bottomPanel.style.flex = `1 0 ${bottomHeight}px`;
     });
 </script>
 

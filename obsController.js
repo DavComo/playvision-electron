@@ -1,5 +1,4 @@
-import { OBSWebSocket } from "./node_modules/obs-websocket-js/dist/obs-ws.js";
-const obs = new OBSWebSocket();
+const obsWs = window.obs;
 
 let websocketConnected = false;
 let existingScenes = [];
@@ -65,7 +64,12 @@ async function setInitialValues() {
         let scenePreviewInstance = document.createElement('img');
         
         scenePreviewInstance.onclick = switchPreviewInstance;
-        scenePreviewInstance.id = scene.sceneName;
+        if (window.myStore.get("previewInstance_" + i)) {
+            scenePreviewInstance.id = await window.myStore.get("previewInstance_" + i);
+        } else {
+            scenePreviewInstance.id = scene.sceneName;
+            window.myStore.set("previewInstance_" + i, scene.sceneName);
+        }
         scenePreviewInstance.src = "";
         if (scene.sceneName == response.currentPreviewSceneName) {
             scenePreviewInstance.classList.add('preview');
@@ -303,7 +307,7 @@ function announceBrokenConnection() {
     document.getElementById('body').classList.add('blur');
     document.getElementById('error-box').classList.remove('hidden');
     document.getElementById('error-title').innerText = "Error connecting to OBS";
-    document.getElementById('error-message').innerHTML = 'Make sure OBS is running and the WebSocket server is enabled"PlayVision cannot connect to OBS Websocket, please fix before using OBS Control. Ensure OBS is running on port 4455 without a password, and OBS Websocket is <a style="cursor: help;" href="https://obsproject.com/kb/remote-control-guide">turned on.</a> Please refresh with Cmd+R or Ctrl+R after fixing the issue.';
+    document.getElementById('error-message').innerHTML = 'PlayVision cannot connect to OBS Websocket, please fix before using OBS Control. Ensure OBS is running on port 4455 without a password, and OBS Websocket is <a style="cursor: help;" href="https://obsproject.com/kb/remote-control-guide">turned on.</a> Please refresh with Cmd+R or Ctrl+R after fixing the issue.';
 }
 
 window.toggleStream = async function () {
@@ -347,6 +351,9 @@ window.changeTransition = async function () {
 
 window.switchPreviewInstance = async function () {
     this.id = existingScenes[(existingScenes.indexOf(this.id) + 1) % existingScenes.length];
+    const previewIndex = Array.from(document.getElementById('scenePreviewContainer').children).indexOf(this);
+    window.myStore.set("previewInstance_" + previewIndex, this.id);
+
     if (Array.from(this.classList).includes('preview')) {
         this.classList.remove('preview');
     }
