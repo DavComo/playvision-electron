@@ -20,6 +20,16 @@ contextBridge.exposeInMainWorld('myStore', {
     }
 });
 
+contextBridge.exposeInMainWorld('fileAPI', {
+  save: (path, content) => ipcRenderer.invoke('save-file', { path, content }),
+});
+
+contextBridge.exposeInMainWorld('ipc', {
+    send: (channel, data) => ipcRenderer.send(channel, data),
+    on: (channel, callback) => ipcRenderer.on(channel, (event, data) => callback(data)),
+    invoke: (channel, data) => ipcRenderer.invoke(channel, data)
+});
+
 const obs = new OBSWebSocket;
 contextBridge.exposeInMainWorld('obs', {
     connect: (url) => obs.connect(url),

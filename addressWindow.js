@@ -12,9 +12,49 @@ window.saveValue = async function (value, key, element) {
     }
     await window.myStore.set(key, value)
 
-    if (element.id = 'toggleAuthentication') {
+}
+
+window.saveLicenseKey = async function () {
+    key = document.getElementById("licenseKey").value
+    validateLicenseKey(key)
+}
+
+const validateLicenseKey = async function (key) {
+    document.getElementById("licenseKey").disabled = true
+    document.getElementById("licenseKeyButton").disabled = true
+
+    document.getElementById("licenseKey").value = key
+
+    formattedData = `
+        var licenseKey = "${key}";
+        `
         
+        window.fileAPI.save('./.licenseKey.js', formattedData)
+        .then(result => {
+            if (result.success) {
+            console.log('File saved!');
+            } else {
+            console.error('Error:', result.error);
+            }
+        });
+    
+    const accessKeyReponse = await fetch("https://lgphy9q5lb.execute-api.eu-central-1.amazonaws.com/?licenseKey=" + key)
+    if (accessKeyReponse.status == 200) {
+        document.getElementById("licenseKey").style["borderColor"] = 'green'
+        document.getElementById("licenseKeyInfo").style["color"] = 'green'
+        document.getElementById("licenseKeyInfo").innerText = 'Valid License Key!'
+        const responseJson = await accessKeyReponse.json()
+        console.log(responseJson);
+        window.ipc.send('valid-license-key', { responseJson });
+    } else {
+        document.getElementById("licenseKey").style["borderColor"] = 'red'
+        document.getElementById("licenseKeyInfo").style["color"] = 'red'
+        document.getElementById("licenseKeyInfo").innerText = 'Invalid License Key'
     }
+
+    document.getElementById("licenseKey").disabled = false
+    document.getElementById("licenseKeyButton").disabled = false
+
 }
 
 window.onload = async function () {
@@ -51,4 +91,8 @@ window.onload = async function () {
         serverIp = 'localhost'
     }
     document.getElementById('serverIP').value = serverIp
+
+    if (!(licenseKey === undefined) && typeof(licenseKey) != 'object') {
+        validateLicenseKey(licenseKey)
+    }
 }

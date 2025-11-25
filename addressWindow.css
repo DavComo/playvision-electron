@@ -106,3 +106,28 @@ body {
     filter: blur(1px);
 }
 
+button {
+    width: 30%;
+    height: 7vh;
+    font-size: 20px;
+    border-radius: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    color: #fff;
+    background-color: #04AA6D;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px #999;
+}
+
+button:active {
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+button:disabled {
+    background-color: #848484;
+}

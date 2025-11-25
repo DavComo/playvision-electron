@@ -1,9 +1,10 @@
-const { app, BrowserWindow, Menu, ipcMain} = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, dialog} = require('electron');
 const path = require('path');
 const url = require('url');
 const express = require('express');
 const { updateElectronApp, UpdateSourceType } = require('update-electron-app');
 const Store = require('electron-store');
+const fs = require('fs');
 
 
 const defaultSchema = {
@@ -23,6 +24,31 @@ ipcMain.handle('electron-store-get-data', (event, key) => {
 
 ipcMain.on('electron-store-set-data', (event, key, value) => {
     store.set(key, value);
+});
+
+ipcMain.handle('save-file', async (_event, { path, content }) => {
+  try {
+    await fs.promises.writeFile(path, content);
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.on('valid-license-key', (event, data) => {
+    console.log('GUIJHB')
+    for (const win of BrowserWindow.getAllWindows()) {
+        win.webContents.send('license-key-validified', data);
+    }
+});
+
+ipcMain.handle("show-alert", async (event, options) => {
+  return dialog.showMessageBox({
+    type: options.type || "info",
+    title: options.title || "Alert",
+    message: options.message,
+    buttons: ["OK"]
+  });
 });
 
 let pythonProcess;
@@ -176,6 +202,16 @@ function createWindow() {
             },
         ]
     },
+    { label: "Edit",
+        submenu: [
+            { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+            { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+            { type: "separator" },
+            { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+            { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+            { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+            { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+    ]},
     {
         label: 'View', 
         submenu: [
@@ -284,4 +320,12 @@ app.on('quit', () => {
     if (pythonProcess) {
         pythonProcess.kill();
     }
+
+    fs.unlink('./.streamData.js', (err) => {
+    if (err) {
+        console.error('Failed to delete file:', err);
+        return;
+    }
+    console.log('File deleted successfully');
+    });
 });

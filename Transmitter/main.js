@@ -3,7 +3,7 @@ var schools = [];
 
 (function(window, document, undefined) {
 
-    window.onload = init();
+    window.onload = init("");
 
 })(window, document, undefined);
 
@@ -11,18 +11,38 @@ var dynamodb;
 var dynamoClient;
 var tableName;
 
-async function init() {  
+
+window.addEventListener('message', event => {
+  if (event.data.type === 'license-key-validified') {
+    init(event.data.data.responseJson)
+  }
+});
+
+
+async function init(responseJson) {  
+    if (responseJson == "") {
+        if (typeof(licenseKey) == 'undefined') {
+            window.parent.postMessage({
+                type: "show-alert",
+                message: "Enter license key in settings."
+            }, "*");
+            return
+        }
+        const accessKeyReponse = await fetch("https://lgphy9q5lb.execute-api.eu-central-1.amazonaws.com/?licenseKey=" + licenseKey)
+        responseJson = await accessKeyReponse.json()
+    }
+
     var inputs = document.getElementsByTagName("input")
     for (var i = 0; i < inputs.length; i++) {
         inputs[i].value = "Loading..."
     };
-    tableName = streamData.dbName;
+    tableName = responseJson.defaultStream;
     document.getElementById("serverName").value = tableName;
     // Initialize AWS SDK and DynamoDB client
     AWS.config.update({
-        region: streamData.awsRegion,
-        accessKeyId: streamData.accessKey,
-        secretAccessKey: streamData.secretKey
+        region: "eu-central-1",
+        accessKeyId: responseJson.accessKey,
+        secretAccessKey: responseJson.secretKey
     });
 
     dynamodb = new AWS.DynamoDB();

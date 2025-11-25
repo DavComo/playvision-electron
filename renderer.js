@@ -15,3 +15,18 @@ function toggleWindow(windowId, checked) {
 window.electronAPI.onToggleWindow((windowId, checked) => {
     toggleWindow(windowId, checked);
 });
+
+window.ipc.on('license-key-validified', data => {
+  document.getElementById('bottom-panel-iframe').contentWindow.postMessage({
+    type: 'license-key-validified',
+    data
+  }, '*');
+});
+
+window.addEventListener("message", async (event) => {
+  if (event.data.type === "show-alert") {
+    window.ipc.invoke("show-alert", {
+      message: event.data.message
+    });
+  }
+});
