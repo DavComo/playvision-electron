@@ -20,8 +20,10 @@ contextBridge.exposeInMainWorld('myStore', {
     }
 });
 
+
 contextBridge.exposeInMainWorld('fileAPI', {
-  save: (path, content) => ipcRenderer.invoke('save-file', { path, content }),
+  saveData: (filename, data) => ipcRenderer.invoke('file:save', filename, data),
+  loadData: (filename) => ipcRenderer.invoke('file:load', filename),
 });
 
 contextBridge.exposeInMainWorld('ipc', {

@@ -10,6 +10,7 @@ var schools = [];
 var dynamodb;
 var dynamoClient;
 var docDataTempTemp;
+var streamData;
 
 function fetchData() {
     const params = {
@@ -32,7 +33,16 @@ function fetchData() {
     });
 }
 
-function init() {
+async function getConfig() {
+    const res = await fetch('/stream-config') // same origin as your HTML
+    if (!res.ok) throw new Error('Failed to load config')
+    const cfg = await res.json()
+
+    return cfg
+}
+
+async function init() {
+    streamData = await getConfig()
     // Initialize AWS SDK and DynamoDB client
     AWS.config.update({
         region: streamData.awsRegion,

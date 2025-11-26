@@ -64,7 +64,7 @@ async function setInitialValues() {
         let scenePreviewInstance = document.createElement('img');
         
         scenePreviewInstance.onclick = switchPreviewInstance;
-        if (window.myStore.get("previewInstance_" + i)) {
+        if (await window.myStore.get("previewInstance_" + i)) {
             scenePreviewInstance.id = await window.myStore.get("previewInstance_" + i);
         } else {
             scenePreviewInstance.id = scene.sceneName;

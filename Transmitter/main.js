@@ -21,14 +21,15 @@ window.addEventListener('message', event => {
 
 async function init(responseJson) {  
     if (responseJson == "") {
-        if (typeof(licenseKey) == 'undefined') {
+        var data = await window.fileAPI.loadData(".licenseKey.json")
+        if (data.ok == false) {
             window.parent.postMessage({
                 type: "show-alert",
                 message: "Enter license key in settings."
             }, "*");
             return
         }
-        const accessKeyReponse = await fetch("https://lgphy9q5lb.execute-api.eu-central-1.amazonaws.com/?licenseKey=" + licenseKey)
+        const accessKeyReponse = await fetch("https://lgphy9q5lb.execute-api.eu-central-1.amazonaws.com/?licenseKey=" + data.data.licenseKey)
         responseJson = await accessKeyReponse.json()
     }
 
@@ -164,7 +165,7 @@ function initButtons() {
                 ":a": parseInt(document.getElementById("side_1-timeouts").value),
                 ":b": parseInt(document.getElementById("side_2-timeouts").value),
                 ":c": parseInt(document.getElementById("side_1-fouls").value),
-                ":d": parseInt(document.getElementById("side_1-fouls").value),
+                ":d": parseInt(document.getElementById("side_2-fouls").value),
                 ":e": document.getElementById("countingDown").checked,
                 ":x": document.getElementById("showStopwatch").checked,
                 ":y": parseInt(document.getElementById("periodInterval").value),

@@ -26,14 +26,43 @@ ipcMain.on('electron-store-set-data', (event, key, value) => {
     store.set(key, value);
 });
 
-ipcMain.handle('save-file', async (_event, { path, content }) => {
+// main.js (add below the other imports and app.whenReady)
+const userDataPath = app.getPath('userData')
+
+ipcMain.handle('file:save', async (event, filename, data) => {
   try {
-    await fs.promises.writeFile(path, content);
-    return { success: true };
+    const filePath = path.join(userDataPath, filename)
+
+    // If you want JSON:
+    const toWrite = typeof data === 'string' ? data : JSON.stringify(data, null, 2)
+
+    await fs.promises.writeFile(filePath, toWrite, 'utf-8')
+    return { ok: true, path: filePath }
   } catch (err) {
-    return { success: false, error: err.message };
+    console.error('Save error', err)
+    return { ok: false, error: err.message }
   }
-});
+})
+
+ipcMain.handle('file:load', async (event, filename) => {
+  try {
+    const filePath = path.join(userDataPath, filename)
+    const content = await fs.promises.readFile(filePath, 'utf-8')
+
+    // If you know it’s JSON, parse it:
+    let parsed
+    try {
+      parsed = JSON.parse(content)
+    } catch {
+      parsed = content
+    }
+
+    return { ok: true, data: parsed }
+  } catch (err) {
+    console.error('Load error', err)
+    return { ok: false, error: err.message }
+  }
+})
 
 ipcMain.on('valid-license-key', (event, data) => {
     console.log('GUIJHB')
@@ -269,6 +298,18 @@ function createWindow() {
     });
 }
 
+const configPath = path.join(app.getPath('userData'), '.streamData.json')
+
+function loadStreamConfig() {
+  try {
+    const raw = fs.readFileSync(configPath, 'utf8')
+    return JSON.parse(raw)
+  } catch (e) {
+    console.error('Could not read stream config:', e)
+    return {}
+  }
+}
+
 app.whenReady().then(() => {
     const expressApp = express();
     const port = 5500;
@@ -280,6 +321,13 @@ app.whenReady().then(() => {
             next();
         }
     });
+    
+    expressApp.get('/stream-config', (req, res) => {
+        const config = loadStreamConfig()
+        res.json(config)
+    })
+
+
 
     expressApp.get('/teamScores', (req, res) => {
         res.sendFile(path.join(__dirname, 'Renderer', 'football', 'teamScores', 'main.html'));

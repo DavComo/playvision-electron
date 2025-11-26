@@ -26,10 +26,10 @@ const validateLicenseKey = async function (key) {
     document.getElementById("licenseKey").value = key
 
     formattedData = `
-        var licenseKey = "${key}";
+        {"licenseKey" : "${key}"}
         `
         
-        window.fileAPI.save('./.licenseKey.js', formattedData)
+        window.fileAPI.saveData('.licenseKey.json', formattedData)
         .then(result => {
             if (result.success) {
             console.log('File saved!');
@@ -48,15 +48,15 @@ const validateLicenseKey = async function (key) {
         window.ipc.send('valid-license-key', { responseJson });
 
         formattedData = `
-        var streamData = {
+        {
             "dbName": "${responseJson.defaultStream}",
             "accessKey": "${responseJson.accessKey}",
             "secretKey": "${responseJson.secretKey}",
             "awsRegion": "eu-central-1"
-        };
+        }
         `
         
-        window.fileAPI.save('./.streamData.js', formattedData)
+        window.fileAPI.saveData('.streamData.json', formattedData)
         .then(result => {
             if (result.success) {
             console.log('File saved!');
@@ -64,6 +64,9 @@ const validateLicenseKey = async function (key) {
             console.error('Error:', result.error);
             }
         });
+        data = await window.fileAPI.loadData(".streamData.json")
+        console.log("dawwad");
+        
     } else {
         document.getElementById("licenseKey").style["borderColor"] = 'red'
         document.getElementById("licenseKeyInfo").style["color"] = 'red'
@@ -110,7 +113,8 @@ window.onload = async function () {
     }
     document.getElementById('serverIP').value = serverIp
 
-    if (!(licenseKey === undefined) && typeof(licenseKey) != 'object') {
-        validateLicenseKey(licenseKey)
+    data = await window.fileAPI.loadData(".licenseKey.json")
+    if (data.ok == true) {
+        validateLicenseKey(data.data.licenseKey)
     }
 }
