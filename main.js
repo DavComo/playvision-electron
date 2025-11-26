@@ -310,9 +310,50 @@ function loadStreamConfig() {
   }
 }
 
+function setupAutoUpdater() {
+  autoUpdater.logger = require('electron-log')
+  autoUpdater.logger.transports.file.level = 'info'
+
+  autoUpdater.autoDownload = true
+
+  autoUpdater.on('update-not-available', () => {
+    console.log('No update available.')
+  })
+
+  autoUpdater.on('error', err => {
+    console.error('Error in auto-updater:', err)
+  })
+
+  autoUpdater.on('download-progress', progressObj => {
+    console.log(`Downloaded ${Math.round(progressObj.percent)}%`)
+  })
+
+  autoUpdater.on('update-downloaded', info => {
+    console.log('Update downloaded:', info.version)
+
+    const result = dialog.showMessageBoxSync({
+      type: 'question',
+      buttons: ['Restart now', 'Later'],
+      defaultId: 0,
+      cancelId: 1,
+      title: 'Update ready',
+      message: 'A new version has been downloaded. Restart to apply it?'
+    })
+
+    if (result === 0) {
+      autoUpdater.quitAndInstall()
+    }
+  })
+
+  autoUpdater.checkForUpdates()
+}
+
+
 app.whenReady().then(() => {
     const expressApp = express();
     const port = 5500;
+
+    setupAutoUpdater()
 
     expressApp.use((req, res, next) => {
         if (req.url.startsWith('/.')) {

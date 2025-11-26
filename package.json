@@ -9,6 +9,7 @@
 		"buildAll": "electron-builder --mac --windows --linux",
 		"buildWin": "electron-builder --windows",
 		"buildMac": "electron-builder --mac",
+		"publishMac": "electron-builder --mac --publish always",
 		"buildLinux": "electron-builder --linux",
 		"jest": "jest",
 		"wdio": "wdio run ./wdio.conf.js",
@@ -28,15 +29,22 @@
 	"dependencies": {
 		"aws-sdk": "^2.1687.0",
 		"electron-store": "^8.2.0",
+		"electron-updater": "^6.6.2",
 		"express": "^4.19.2",
 		"obs-websocket-js": "^5.0.6",
 		"update-electron-app": "^3.0.0",
 		"wdio-electron-service": "^7.0.1"
 	},
 	"build": {
-		"publish": null,
 		"appId": "com.playvision.playvisionApp",
 		"productName": "PlayVision",
+		"publish": [
+			{
+				"provider": "github",
+				"owner": "DavComo",
+				"repo": "playvision-electron"
+			}
+		],
 		"files": [
 			"**/*",
 			"!**/.gitignore",
