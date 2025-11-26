@@ -153,7 +153,7 @@ function initButtons() {
             Key: {
               "valueId": "gameScreen"
             },
-            UpdateExpression: ("set gameName = :r, showScore = :s, sideOneName = :t, sideTwoName = :u, sideOneScore = :v, sideTwoScore = :w, showStopwatch = :x, periodIntervalSeconds = :y, periodMark = :z"),
+            UpdateExpression: ("set gameName = :r, showScore = :s, sideOneName = :t, sideTwoName = :u, sideOneScore = :v, sideTwoScore = :w, sideOneTimeouts = :a, sideTwoTimeouts = :b, sideOneFouls = :c, sideTwoFouls = :d, countingDown = :e, showStopwatch = :x, periodIntervalSeconds = :y, periodMark = :z"),
             ExpressionAttributeValues: {
                 ":r": document.getElementById("gameName").value,
                 ":s": document.getElementById("showGame").checked,
@@ -161,6 +161,11 @@ function initButtons() {
                 ":u": document.getElementById("side_2-name-scores").value,
                 ":v": parseInt(document.getElementById("side_1-score").value),
                 ":w": parseInt(document.getElementById("side_2-score").value),
+                ":a": parseInt(document.getElementById("side_1-timeouts").value),
+                ":b": parseInt(document.getElementById("side_2-timeouts").value),
+                ":c": parseInt(document.getElementById("side_1-fouls").value),
+                ":d": parseInt(document.getElementById("side_1-fouls").value),
+                ":e": document.getElementById("countingDown").checked,
                 ":x": document.getElementById("showStopwatch").checked,
                 ":y": parseInt(document.getElementById("periodInterval").value),
                 ":z": document.getElementById("periodMark").value
@@ -255,11 +260,16 @@ function updateData() {
         "team_2" : docDataTemp['gameScreen']['sideTwoName'].S,
         "team_1s" : docDataTemp['gameScreen']['sideOneScore'].N,
         "team_2s" : docDataTemp['gameScreen']['sideTwoScore'].N,
+        "team_1_tos" : docDataTemp['gameScreen']['sideOneTimeouts'].N,
+        "team_2_tos" : docDataTemp['gameScreen']['sideTwoTimeouts'].N,
+        "team_1_fouls" : docDataTemp['gameScreen']['sideOneFouls'].N,
+        "team_2_fouls" : docDataTemp['gameScreen']['sideTwoFouls'].N,
         "gameName_1" : docDataTemp['gameScreen']['gameName'].S,
         "hide_1" : docDataTemp['gameScreen']['showScore'].BOOL,
         "stopwatchms" : docDataTemp['gameScreen']['stopwatchValueMs'].N,
         "stopwatchrunning" : docDataTemp['gameScreen']['stopwatchRunning'].BOOL,
         "startedAt" : docDataTemp['gameScreen']['stopwatchStartedAt'].N,
+        "countingDown" : docDataTemp['gameScreen']['countingDown'].BOOL,
         "showStopwatch" : docDataTemp['gameScreen']['showStopwatch'].BOOL,
         "eventName" : docDataTemp['eventClassifier']['eventName'].S,
         "eventScene" : docDataTemp['eventClassifier']['eventScene'].S,
@@ -386,6 +396,12 @@ function updateData() {
     document.getElementById("side_1-score").value = docData["team_1s"];
     document.getElementById("side_2-score").value = docData["team_2s"];
 
+    document.getElementById("side_1-fouls").value = docData["team_1_fouls"];
+    document.getElementById("side_1-timeouts").value = docData["team_1_tos"];
+    document.getElementById("side_2-fouls").value = docData["team_2_fouls"];
+    document.getElementById("side_2-timeouts").value = docData["team_2_tos"];
+    
+
     document.getElementById("gameName").value = docData["gameName_1"];
 
     document.getElementById("showGame").checked = docData["hide_1"];
@@ -397,16 +413,18 @@ function updateData() {
     document.getElementById("periodInterval").value = docData["periodIntervalSeconds"];
     document.getElementById("periodMark").value = docData["periodMark"];
     document.getElementById("showStopwatch").checked = docData["showStopwatch"];
+    document.getElementById("countingDown").checked = docData["countingDown"];
 
     initStopwatch();
 }
 
-
+var countingDown; /* If true, count the stopwatch down, if false, count up */
 var stopwatchStarted;
 var startOfStopwatch;
 var addedTime = 0;
 
 function initStopwatch() {
+    countingDown = docData["countingDown"];
     stopwatchStarted = docData["stopwatchrunning"];
     startOfStopwatch = docData["startedAt"];
     //Init stopwatch buttons
@@ -459,7 +477,7 @@ function initStopwatch() {
                 UpdateExpression: "set stopwatchRunning = :r, stopwatchStartedAt = :s, stopwatchValueMs = :v",
                 ExpressionAttributeValues: {
                     ":r": true,
-                    ":s": startOfStopwatch - addedTime,
+                    ":s": startOfStopwatch - addedTime * ((document.getElementById("countingDown").checked) ? -1 : 1),
                     ":v": timeStringToMs(document.getElementById("valueMs").value)
                 },
                 ReturnValues: "UPDATED_NEW"
@@ -498,16 +516,54 @@ function initStopwatch() {
 var timeoutInterval = 0;
 
 async function updateStopwatch() {
+    countingDown = document.getElementById("countingDown").checked
+
     if (document.getElementById("valueMs").value == "") {
         document.getElementById("valueMs").value = "0 h : 0 m : 0 s : 000 ms"
     }
 
     while (stopwatchStarted) {
         timeoutInterval--;
-        var ms = (Date.now() - startOfStopwatch) + addedTime;
+        var ms;
+        
+        // Calculate time based on counting direction
+        if (countingDown) {
+            // Countdown: subtract elapsed time from the initial value
+            ms = addedTime - (Date.now() - startOfStopwatch);
+            
+            // Stop at zero when counting down
+            if (ms <= 0) {
+                ms = 0;
+                stopwatchStarted = false;
+                document.getElementById("startAndStop").innerText = 'Start';
+                
+                var params = {
+                    TableName: tableName,
+                    Key: {
+                      "valueId": "gameScreen"
+                    },
+                    UpdateExpression: "set stopwatchRunning = :r, stopwatchStartedAt = :s, stopwatchValueMs = :v",
+                    ExpressionAttributeValues: {
+                        ":r": false,
+                        ":s": startOfStopwatch - addedTime,
+                        ":v": 0
+                    },
+                    ReturnValues: "UPDATED_NEW"
+                  };
+                  
+                dynamoClient.update(params, function(err, data) {});
+                document.getElementById("valueMs").value = "0 h : 0 m : 0 s : 000 ms"
+                continue;
+            }
+        } else {
+            // Count up: add elapsed time to the initial value
+            ms = (Date.now() - startOfStopwatch) + addedTime;
+        }
+        
         let seconds = Math.floor(ms / 1000);
         let minutes = Math.floor(seconds / 60);
         let hours = Math.floor(minutes / 60);
+        
         if (seconds % parseInt(document.getElementById('periodInterval').value) == 0 && ms % 1000 <= 10 && timeoutInterval <= 0 && seconds != 0) {
             stopwatchStarted = false;
             document.getElementById("startAndStop").innerText = 'Start';

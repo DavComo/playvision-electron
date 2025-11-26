@@ -46,6 +46,24 @@ const validateLicenseKey = async function (key) {
         const responseJson = await accessKeyReponse.json()
         console.log(responseJson);
         window.ipc.send('valid-license-key', { responseJson });
+
+        formattedData = `
+        var streamData = {
+            "dbName": "${responseJson.defaultStream}",
+            "accessKey": "${responseJson.accessKey}",
+            "secretKey": "${responseJson.secretKey}",
+            "awsRegion": "eu-central-1"
+        };
+        `
+        
+        window.fileAPI.save('./.streamData.js', formattedData)
+        .then(result => {
+            if (result.success) {
+            console.log('File saved!');
+            } else {
+            console.error('Error:', result.error);
+            }
+        });
     } else {
         document.getElementById("licenseKey").style["borderColor"] = 'red'
         document.getElementById("licenseKeyInfo").style["color"] = 'red'

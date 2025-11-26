@@ -223,6 +223,30 @@
                             <hr class="formRowSep">
 
                             <dl class="formRow formRow--input">
+                                <dt>
+                                    <div class="formRow-labelWrapper">
+                                        <label class="formRow-label">Team TOs / Fouls</label>
+                                    </div>
+                                </dt>
+                                <dd>
+                                    <div class="inputGroup inputGroup--joined">
+                                        <span class="inputGroup-text">Side 1 Fouls</span>
+                                        <input type="number" class="input input--number js-numberBoxTextInput" min="0" id="side_1-fouls">
+                                        <span class="inputGroup-text">Side 1 Timeouts</span>
+                                        <input type="number" class="input input--number js-numberBoxTextInput" min="0" id="side_1-timeouts">
+                                    </div>
+                                    <div class="inputGroup inputGroup--joined">
+                                        <span class="inputGroup-text">Side 2 Fouls</span>
+                                        <input type="number" class="input input--number js-numberBoxTextInput" min="0" id="side_2-fouls">
+                                        <span class="inputGroup-text">Side 2 Timeouts</span>
+                                        <input type="number" class="input input--number js-numberBoxTextInput" min="0" id="side_2-timeouts">
+                                    </div>
+                                </dd>
+                            </dl>
+
+                            <hr class="formRowSep">
+
+                            <dl class="formRow formRow--input">
                                 <dt style="padding-top: 22px;">
                                     <div class="formRow-labelWrapper">
                                         <label class="formRow-label">Game Name</label>
@@ -300,6 +324,21 @@
                                 <dd>
                                     <div class="inputGroup inputGroup--joined">
                                         <input type="text" class="input texts t1" id="periodMark">
+                                    </div>
+                                </dd>
+                            </dl>
+
+                            <hr class="formRowSep">
+
+                            <dl class="formRow formRow--input">
+                                <dt style="padding-top: 17px;">
+                                    <div class="formRow-labelWrapper">
+                                        <label class="formRow-label">Count Down</label>
+                                    </div>
+                                </dt>
+                                <dd>
+                                    <div class="inputGroup inputGroup--joined">
+                                        <input type="checkbox" class="checks c1 clickToShow_1" id="countingDown" style="height: 30px; width: 30px">
                                     </div>
                                 </dd>
                             </dl>

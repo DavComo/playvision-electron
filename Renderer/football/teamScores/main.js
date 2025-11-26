@@ -97,11 +97,16 @@ async function updateData() {
         "team_2" : docDataTemp['gameScreen']['sideTwoName'].S,
         "team_1s" : docDataTemp['gameScreen']['sideOneScore'].N,
         "team_2s" : docDataTemp['gameScreen']['sideTwoScore'].N,
+        "team_1_tos" : docDataTemp['gameScreen']['sideOneTimeouts'].N,
+        "team_2_tos" : docDataTemp['gameScreen']['sideTwoTimeouts'].N,
+        "team_1_fouls" : docDataTemp['gameScreen']['sideOneFouls'].N,
+        "team_2_fouls" : docDataTemp['gameScreen']['sideTwoFouls'].N,
         "gameName_1" : docDataTemp['gameScreen']['gameName'].S,
         "hide_1" : !docDataTemp['gameScreen']['showScore'].BOOL,
         "stopwatchms" : docDataTemp['gameScreen']['stopwatchValueMs'].N,
         "stopwatchrunning" : docDataTemp['gameScreen']['stopwatchRunning'].BOOL,
         "startedAt" : docDataTemp['gameScreen']['stopwatchStartedAt'].N,
+        "countingDown" : docDataTemp['gameScreen']['countingDown'].BOOL,
         "showStopwatch" : docDataTemp['gameScreen']['showStopwatch'].BOOL,
         "periodMark" : docDataTemp['gameScreen']['periodMark'].S
     }
@@ -118,6 +123,12 @@ async function updateData() {
     updateStopwatch(docData);
 
     if (docData['hide_1'] == false) {
+        $('body')
+            .queue(updateSpecific('firstTimeouts', 'team_1_tos'))
+            .queue(updateSpecific('secondTimeouts', 'team_2_tos'))
+            .queue(updateSpecific('firstFouls', 'team_1_fouls'))
+            .queue(updateSpecific('secondFouls', 'team_2_fouls'))
+
         if ($('#gameName').text() != docData['gameName_1']) {
             minTimeout += 1000;
             $('body')
@@ -267,7 +278,10 @@ function updateColors() {
 
         var gradientCSS = 'linear-gradient(to right, ' + colors[schoolName_right.toLowerCase() + '_primary'] + ' 0%, ' + colors[schoolName_left.toLowerCase() + '_primary'] + ' 100%)'
         $('#top-colored').css('background', gradientCSS);
-        $('#bottom-colored').css('background', gradientCSS);
+        $('#stopwatch-container').css('background', gradientCSS);
+
+        $('#left-stats').css('background-color', colors[schoolName_left.toLowerCase() + '_secondary']);
+        $('#right-stats').css('background-color', colors[schoolName_right.toLowerCase() + '_secondary']);
         next();
     }
 }
@@ -279,16 +293,16 @@ async function updateStopwatch() {
     if (docData['stopwatchrunning'] == false) {
         var timeinms = parseInt(docData['stopwatchms']) + 5;
         var seconds = Math.floor(timeinms / 1000) % 60;
-        var minutes = Math.floor(timeinms / 60000) % 60;
+        var minutes = Math.floor(timeinms / 60000);
         $('#stopwatch').text(String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0'));
     } else {
         while (docData['stopwatchrunning'] == true) {
-            var timeinms = Date.now() - docData['startedAt'];
+            var timeinms = Math.abs((docData['startedAt'] - Date.now()));
             if (timeinms < 0) {
                 timeinms = 0;
             }
             var seconds = Math.floor(timeinms / 1000) % 60;
-            var minutes = Math.floor(timeinms / 60000) % 60;
+            var minutes = Math.floor(timeinms / 60000);
             $('#stopwatch').text(String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0'));
             await sleep(10)
         }
