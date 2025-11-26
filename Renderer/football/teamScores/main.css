@@ -86,7 +86,7 @@ img {
 }
 
 .top-container {
-    width: 370px;
+    width: auto;
     height: 38px;
     background-color: white;
     clip-path: polygon(2.5% 0%, 0% 100%, 100% 100%, 97.5% 0%);
@@ -100,7 +100,7 @@ img {
 }
 
 .top-colored {
-    width: 380px;
+    width: auto;
     height: 38px;
     background: linear-gradient(90deg, rgba(135,65,70,1) 0%, rgba(37,68,132,1) 100%);;
     clip-path: polygon(2.5% 10%, 0.5% 100%, 99.5% 100%, 97.5% 10%);
@@ -110,6 +110,8 @@ img {
 }
 
 .top-colored b {
+    padding-left: 20px;
+    padding-right: 20px;
     font-size: 30px;
     color: white;
     font-family: 'Franklin Gothic Heavy';
