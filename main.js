@@ -2,13 +2,15 @@ const { app, BrowserWindow, Menu, ipcMain, dialog} = require('electron');
 const path = require('path');
 const url = require('url');
 const express = require('express');
-const { updateElectronApp, UpdateSourceType } = require('update-electron-app');
 const Store = require('electron-store');
 const fs = require('fs');
+const { autoUpdater } = require('electron-updater')
 
 
 const defaultSchema = {
 };
+
+app.setName("PlayVision")
 
 const store = new Store();
 if (store.get('config') === undefined) {
@@ -124,8 +126,9 @@ function createWindow() {
     var bottomPanelHidden = false;
 
     const template = [{
-        label: 'app.name',
+        label: app.name,
         submenu: [
+        { role: 'about'},
         { role: 'reload' },
         { role: 'forceReload' },
         {type: 'separator'},
@@ -151,7 +154,6 @@ function createWindow() {
                 addressWindow.show();
             });}},
         {type: 'separator'},
-        { role: 'toggleDevTools' },
         ]
     },
     {
@@ -354,6 +356,14 @@ app.whenReady().then(() => {
     const port = 5500;
 
     setupAutoUpdater()
+
+    app.setAboutPanelOptions({
+        applicationName: app.name,
+        applicationVersion: app.getVersion(),
+        version: app.getVersion(),
+        copyright: '© 2025 David Comor',
+        credits: 'Built with Electron and lots of sleepless nights 💤'
+    })
 
     expressApp.use((req, res, next) => {
         if (req.url.startsWith('/.')) {

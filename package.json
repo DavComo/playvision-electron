@@ -1,6 +1,7 @@
 {
 	"name": "@playvision/playvision-app",
-	"version": "1.0.0",
+	"productName": "PlayVision",
+	"version": "1.0.1",
 	"description": "PlayVision integrated stream helper",
 	"author": "David Comor",
 	"main": "main.js",
@@ -28,6 +29,7 @@
 	},
 	"dependencies": {
 		"aws-sdk": "^2.1687.0",
+		"electron-log": "^5.4.3",
 		"electron-store": "^8.2.0",
 		"electron-updater": "^6.6.2",
 		"express": "^4.19.2",
