@@ -94,10 +94,14 @@ async function setInitialValues() {
     }
 
     response = await obs.call('GetCurrentPreviewScene');
-    document.getElementById(response.currentPreviewSceneName).classList.add('preview');
+    if (document.getElementById(response.currentPreviewSceneName)) {
+        document.getElementById(response.currentPreviewSceneName).classList.add('preview');
+    }
 
     response = await obs.call('GetCurrentProgramScene');
-    document.getElementById(response.currentProgramSceneName).classList.add('program');
+    if (document.getElementById(response.currentProgramSceneName)) {
+        document.getElementById(response.currentProgramSceneName).classList.add('program');
+    }
 
 
     response = await obs.call('GetSceneTransitionList');
