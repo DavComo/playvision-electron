@@ -17,9 +17,10 @@ var dynamoClient;
 var docDataTempTemp;
 var streamData;
 
-function fetchData() {
+async function fetchData() {
+    var dbName = (await getConfig()).dbName
     const params = {
-        TableName: streamData.dbName,
+        TableName: dbName,
     };
 
     dynamodb.scan(params, function(err, data) {

@@ -12,9 +12,10 @@ var dynamoClient;
 var docDataTempTemp;
 var streamData;
 
-function fetchData() {
+async function fetchData() {
+    var dbName = (await getConfig()).dbName
     const params = {
-        TableName: streamData.dbName,
+        TableName: dbName,
     };
 
     dynamodb.scan(params, function(err, data) {
@@ -92,8 +93,6 @@ var docDataTemp = {};
 var colors = {};
 //Update Data (Source js + refactoring)
 async function updateData() {
-    
-
     var deltaStart = Date.now();
     var minTimeout = 0;
 
