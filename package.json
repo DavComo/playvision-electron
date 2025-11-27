@@ -63,6 +63,12 @@
 					"arch": [
 						"arm64"
 					]
+				},
+				{
+					"target": "dmg",
+					"arch": [
+						"arm64"
+					]
 				}
 			],
 			"icon": "build/logo.icns",
