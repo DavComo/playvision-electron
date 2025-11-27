@@ -153,8 +153,7 @@ function createWindow() {
             addressWindow.once('ready-to-show', () => {
                 addressWindow.show();
             });}},
-        {type: 'separator'},
-        { role: 'toggleDevTools'}
+        {type: 'separator'}
         ]
     },
     {
