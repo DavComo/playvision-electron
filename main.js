@@ -67,7 +67,6 @@ ipcMain.handle('file:load', async (event, filename) => {
 })
 
 ipcMain.on('valid-license-key', (event, data) => {
-    console.log('GUIJHB')
     for (const win of BrowserWindow.getAllWindows()) {
         win.webContents.send('license-key-validified', data);
     }
@@ -153,7 +152,8 @@ function createWindow() {
             addressWindow.once('ready-to-show', () => {
                 addressWindow.show();
             });}},
-        {type: 'separator'}
+        {type: 'separator'},
+        {role:'toggleDevTools'}
         ]
     },
     {
