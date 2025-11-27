@@ -94,10 +94,10 @@ async function setInitialValues() {
     }
 
     response = await obs.call('GetCurrentPreviewScene');
-    document.querySelector(`[data-scene-uuid="${response.sceneUuid}"]`).classList.add('selectedPreview');
+    document.getElementById(response.currentPreviewSceneName).classList.add('preview');
 
     response = await obs.call('GetCurrentProgramScene');
-    document.querySelector(`[data-scene-uuid="${response.sceneUuid}"]`).classList.add('selectedProgram');
+    document.getElementById(response.currentProgramSceneName).classList.add('program');
 
 
     response = await obs.call('GetSceneTransitionList');
@@ -371,4 +371,9 @@ window.switchPreviewInstance = async function () {
         document.getElementsByClassName('program')[0].classList.remove('program');
     }
     document.getElementById(document.getElementById('program').dataset.sceneName).classList.add('program');
+
+    var screenshot = await getSceneScreenshot(this.id);
+    if (screenshot) {
+        this.src = screenshot;
+    }
 }
