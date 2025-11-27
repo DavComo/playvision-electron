@@ -30,14 +30,8 @@ const validateLicenseKey = async function (key) {
         `
         
         window.fileAPI.saveData('.licenseKey.json', formattedData)
-        .then(result => {
-            if (result.success) {
-            console.log('File saved!');
-            } else {
-            console.error('Error:', result.error);
-            }
-        });
-    
+
+        
     const accessKeyReponse = await fetch("https://lgphy9q5lb.execute-api.eu-central-1.amazonaws.com/?licenseKey=" + key)
     if (accessKeyReponse.status == 200) {
         document.getElementById("licenseKey").style["borderColor"] = 'green'
@@ -47,26 +41,20 @@ const validateLicenseKey = async function (key) {
         console.log(responseJson);
         window.ipc.send('valid-license-key', { responseJson });
 
-        formattedData = `
-        {
-            "dbName": "${responseJson.defaultStream}",
-            "accessKey": "${responseJson.accessKey}",
-            "secretKey": "${responseJson.secretKey}",
-            "awsRegion": "eu-central-1"
+        formattedData = {
+            dbName: `${responseJson.defaultStream}`,
+            accessKey: `${responseJson.accessKey}`,
+            secretKey: `${responseJson.secretKey}`,
+            awsRegion: "eu-central-1"
         }
-        `
-        
-        window.fileAPI.saveData('.streamData.json', formattedData)
-        .then(result => {
-            if (result.success) {
-            console.log('File saved!');
-            } else {
-            console.error('Error:', result.error);
-            }
-        });
+
         data = await window.fileAPI.loadData(".streamData.json")
+        if (data.ok == true) {
+            formattedData.dbName = data.data.dbName
+        }
         console.log("dawwad");
         
+        window.fileAPI.saveData('.streamData.json', formattedData)
     } else {
         document.getElementById("licenseKey").style["borderColor"] = 'red'
         document.getElementById("licenseKeyInfo").style["color"] = 'red'

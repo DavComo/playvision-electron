@@ -37,7 +37,12 @@ async function init(responseJson) {
     for (var i = 0; i < inputs.length; i++) {
         inputs[i].value = "Loading..."
     };
-    tableName = responseJson.defaultStream;
+    var data = await window.fileAPI.loadData(".streamData.json")
+    if ( data.ok == true ) {
+        tableName = data.data.dbName;
+    } else {
+        tableName = ""
+    }
     document.getElementById("serverName").value = tableName;
     // Initialize AWS SDK and DynamoDB client
     AWS.config.update({
@@ -90,6 +95,13 @@ function initButtons() {
         let hours = Math.floor(minutes / 60);
 
         document.getElementById("valueMs").value = hours + " h : " + minutes + " m : " + seconds%60 + " s : " + String(ms%1000).padStart(3, '0') + " ms"
+
+        var data = await window.fileAPI.loadData(".streamData.json")
+        if (data.ok == true) {
+            data.data.dbName = document.getElementById("serverName").value
+        }
+        
+        window.fileAPI.saveData('.streamData.json', data.data)
     };
 
     //Upload Data for all inputs
