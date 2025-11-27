@@ -4,6 +4,13 @@ body {
     justify-content: center;
 }
 
+.main-container,
+.top-container,
+.bottom-container {
+    will-change: clip-path, transform;
+    transform: translateZ(0);
+}
+
 .main-container {
     width: 1010px;
     height: auto;
@@ -171,7 +178,7 @@ img {
 
 .main-container.hidden {
     clip-path: polygon(50% 0%, 50% 100%, 50% 100%, 50% 0%);
-    margin-bottom: 200px;
+    margin-bottom: 100px;
 }
 
 .bottom-container.hidden {
