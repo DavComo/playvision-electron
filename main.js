@@ -154,6 +154,7 @@ function createWindow() {
                 addressWindow.show();
             });}},
         {type: 'separator'},
+        { role: 'toggleDevTools'}
         ]
     },
     {
