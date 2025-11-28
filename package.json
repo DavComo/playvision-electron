@@ -1,7 +1,7 @@
 {
 	"name": "@playvision/playvision-app",
 	"productName": "PlayVision",
-	"version": "1.3.3",
+	"version": "1.3.4",
 	"description": "PlayVision integrated stream helper",
 	"author": "David Comor",
 	"main": "main.js",
@@ -10,8 +10,8 @@
 		"buildAll": "electron-builder --mac --windows --linux",
 		"buildWin": "electron-builder --windows",
 		"buildMac": "electron-builder --mac",
-		"publishMac": "electron-builder --mac --publish always",
 		"buildLinux": "electron-builder --linux",
+		"publishProd": "electron-builder --mac --win --publish always",
 		"jest": "jest",
 		"wdio": "wdio run ./wdio.conf.js",
 		"test": "npm run jest && npm run wdio"
@@ -51,7 +51,8 @@
 			"**/*",
 			"!**/.gitignore",
 			"!**/.git/**",
-			"!**/.vscode/**"
+			"!**/.vscode/**",
+			"!**/.github/**"
 		],
 		"directories": {
 			"output": "dist"
@@ -99,7 +100,13 @@
 				{
 					"target": "nsis",
 					"arch": [
-						"arm64"
+						"x64"
+					]
+				},
+				{
+					"target": "zip",
+					"arch": [
+						"x64"
 					]
 				}
 			],
