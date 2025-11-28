@@ -96,11 +96,13 @@ async function setInitialValues() {
     response = await obs.call('GetCurrentPreviewScene');
     if (document.getElementById(response.currentPreviewSceneName)) {
         document.getElementById(response.currentPreviewSceneName).classList.add('preview');
+        document.querySelector(`[data-scene-uuid="${response.sceneUuid}"]`).classList.add('selectedPreview');
     }
 
     response = await obs.call('GetCurrentProgramScene');
     if (document.getElementById(response.currentProgramSceneName)) {
         document.getElementById(response.currentProgramSceneName).classList.add('program');
+        document.querySelector(`[data-scene-uuid="${response.sceneUuid}"]`).classList.add('selectedProgram');
     }
 
 
@@ -369,12 +371,16 @@ window.switchPreviewInstance = async function () {
     if (document.getElementsByClassName('preview').length > 0) {
         document.getElementsByClassName('preview')[0].classList.remove('preview');
     }
-    document.getElementById(document.getElementById('preview').dataset.sceneName).classList.add('preview');
+    if (document.getElementById(document.getElementById('preview').dataset.sceneName)) {
+        document.getElementById(document.getElementById('preview').dataset.sceneName).classList.add('preview');
+    }
 
     if (document.getElementsByClassName('program').length > 0) {
         document.getElementsByClassName('program')[0].classList.remove('program');
     }
-    document.getElementById(document.getElementById('program').dataset.sceneName).classList.add('program');
+    if (document.getElementById(document.getElementById('program').dataset.sceneName)) {
+        document.getElementById(document.getElementById('program').dataset.sceneName).classList.add('program');
+    }
 
     var screenshot = await getSceneScreenshot(this.id);
     if (screenshot) {
