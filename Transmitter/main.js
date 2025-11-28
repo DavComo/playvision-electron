@@ -39,7 +39,11 @@ async function init(responseJson) {
     };
     var data = await window.fileAPI.loadData(".streamData.json")
     if ( data.ok == true ) {
-        tableName = data.data.dbName;
+        if (data.data.dbName) {
+            tableName = data.data.dbName;
+        } else {
+            tableName = ""
+        }
     } else {
         tableName = ""
     }
@@ -422,13 +426,16 @@ function fetchData() {
         if (err) {
             console.error("Error fetching data from DynamoDB:", err);
             if (err.code == "AccessDeniedException") {
+                document.getElementById('blurrableElement').classList.add("blur");
                 document.getElementById('serverStatus').style.color = "red"
                 document.getElementById('serverStatus').innerText = "Access Denied/Doesn't Exist"
             } else if (err.code == "ValidationException") {
+                document.getElementById('blurrableElement').classList.add("blur");
                 document.getElementById('serverStatus').style.color = "red"
                 document.getElementById('serverStatus').innerText = "Enter Database ID and Sync"
             }
         } else {
+            document.getElementById('blurrableElement').classList.remove("blur");
             document.getElementById('serverStatus').style.color = "green"
             document.getElementById('serverStatus').innerText = "Connected to " + tableName
             docDataTempTemp = data.Items;

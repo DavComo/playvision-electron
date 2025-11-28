@@ -183,8 +183,13 @@ async function updateStats() {
     const outputSkippedFrames = response.outputSkippedFrames;
     const percentageFramesMissed = Math.round(outputSkippedFrames / outputTotalFrames * 1000) / 10;
 
-    document.getElementById('droppedFramesStats').innerText = outputSkippedFrames + '/' + outputTotalFrames;
-    document.getElementById('droppedFramesPercentage').innerText = percentageFramesMissed + '%';
+    if (outputTotalFrames > 0) {
+        document.getElementById('droppedFramesStats').innerText = outputSkippedFrames + '/' + outputTotalFrames;
+        document.getElementById('droppedFramesPercentage').innerText = percentageFramesMissed + '%';
+    } else {
+        document.getElementById('droppedFramesStats').innerText = "- / -"
+        document.getElementById('droppedFramesPercentage').innerText = "-%";
+    }
 
     document.getElementById('segment').style.width = percentageFramesMissed + '%';
 

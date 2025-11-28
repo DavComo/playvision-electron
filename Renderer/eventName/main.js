@@ -23,14 +23,10 @@ async function fetchData() {
         TableName: dbName,
     };
 
-    dynamodb.scan(params, function(err, data) {
+    dynamodb.scan(params, async function(err, data) {
         if (err) {
-            console.error("Error fetching data from DynamoDB:", err);
-            if (err.code == "AccessDeniedException") {
-                window.location.replace('http://localhost:5500/.401.html')
-            } else if (err.code == "ValidationException") {
-                window.location.replace('http://localhost:5500/.404.html')
-            }
+            await sleep(500)
+            fetchData()
         } else {
             // Update the UI with the fetched data
             docDataTempTemp = data.Items;
@@ -40,11 +36,17 @@ async function fetchData() {
 }
 
 async function getConfig() {
-    const res = await fetch('/stream-config') // same origin as your HTML
-    if (!res.ok) throw new Error('Failed to load config')
-    const cfg = await res.json()
-
-    return cfg
+    while (true) {
+        try {
+            const res = await fetch('/stream-config') // same origin as your HTML
+            if (!res.ok) throw new Error('Failed to load config')
+            const cfg = await res.json()
+            return cfg
+        } catch (e) {
+            await sleep(500)
+            continue;
+        }
+    }
 }
 
 async function init() {

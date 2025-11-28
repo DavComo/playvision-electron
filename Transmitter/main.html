@@ -16,19 +16,19 @@
 
     
     <body style="background-color: rgb(44, 46, 56); padding-bottom: 2px; height: fit-content; min-height: 100%;">
-        <div class="blur" id="blurrableElement">
+        <div>
             <!-- Navigation Bar -->
             <header class="tabs tabs--standalone navbar" style="border-top: none; -webkit-app-region: drag; position: sticky; top: 0; z-index: 999;">
-                <div role="tablist" class="hScroller" style="margin-left: 80px;">
+                <div role="tablist" class="hScroller" style="margin-left: 20px;">
                     <span class hScroller-scroll is-calculated id="navBar">
                         <span class="tabs-tab is-active" role="tab" id="pickColorPageTab">
-                            Color Page
+                            Color Pallete
                         </span>
                         <span class="tabs-tab" role="tab" id="pickEventNameTab">
-                            PSA System
+                            Announcement
                         </span>
                         <span class="tabs-tab" role="tab" id="pickStartingSoonPageTab">
-                            Starting Soon
+                            Countdown
                         </span>
                         <span class="tabs-tab" role="tab" id="pickTeamScoresTab">
                             Team Scores
@@ -55,7 +55,7 @@
                 </div>  
             </header>
 
-            <ul class="tabPanes js-pageTabPanes page-panes">
+            <ul class="tabPanes js-pageTabPanes page-panes" id="blurrableElement">
                 <!-- Color Setter page -->
                 <li id="colorPage" class="is-active">
                     <div class="block-container">
@@ -72,7 +72,7 @@
                             <dl class="formRow formRow--input">
                                 <dt style="padding-top: 22px;">
                                     <div class="formRow-labelWrapper">
-                                        <label class="formRow-label">Announcement Contents</label>
+                                        <label class="formRow-label">Contents</label>
                                     </div>
                                 </dt>
                                 <dd>
@@ -87,7 +87,7 @@
                             <dl class="formRow formRow--input">
                                 <dt style="padding-top: 22px;">
                                     <div class="formRow-labelWrapper">
-                                        <label class="formRow-label">Announcement Position</label>
+                                        <label class="formRow-label">Position</label>
                                     </div>
                                 </dt>
                                 <dd>
