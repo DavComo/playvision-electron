@@ -112,6 +112,7 @@ async function updateData() {
         "team_2_fouls" : docDataTemp['gameScreen']['sideTwoFouls'].N,
         "gameName_1" : docDataTemp['gameScreen']['gameName'].S,
         "hide_1" : !docDataTemp['gameScreen']['showScore'].BOOL,
+        "showBasketballStats" : docDataTemp['gameScreen']['showBasketballStats'].BOOL,
         "stopwatchms" : docDataTemp['gameScreen']['stopwatchValueMs'].N,
         "stopwatchrunning" : docDataTemp['gameScreen']['stopwatchRunning'].BOOL,
         "startedAt" : docDataTemp['gameScreen']['stopwatchStartedAt'].N,
@@ -132,6 +133,35 @@ async function updateData() {
     updateStopwatch(docData);
 
     if (docData['hide_1'] == false) {
+        if ($('#team_1').text() != docData['team_1'] || $('#team_2').text() != docData['team_2']) {
+            minTimeout += 3000;
+            await new Promise(resolve => { 
+                $('body')
+                    .queue(elemHide('.timeout.right'))
+                    .queue(elemHide('.timeout.left')).delay(500)
+                    .queue(elemHide('.top-container'))
+                    .queue(elemHide('.stopwatch-container')).delay(500)
+                    .queue(elemHide('.main-container')).delay(500)
+                    .queue(updateSpecific('gameName', 'gameName_1'))
+                    .queue(updateIcon('team_1_icon', docData['team_1']))
+                    .queue(updateIcon('team_2_icon', docData['team_2']))
+                    .queue(updateColors())
+                    .queue(updateSpecific('team_1', 'team_1'))
+                    .queue(updateSpecific('team_2', 'team_2'))
+                    .queue(updateSpecific('team_1s', 'team_1s'))
+                    .queue(updateSpecific('team_2s', 'team_2s'))
+                    .queue(elemShow('.main-container')).delay(500)
+                    .queue(elemShow('.stopwatch-container'))
+                    .queue(elemShow('.top-container')).delay(500)
+                    .queue(elemShow('.timeout.right'))
+                    .queue(elemShow('.timeout.left'))
+                    .queue(function(next) {
+                        resolve();
+                        next();
+                    });
+            });
+        }
+
         $('body')
             .queue(updateSpecific('firstTimeouts', 'team_1_tos'))
             .queue(updateSpecific('secondTimeouts', 'team_2_tos'))
@@ -146,24 +176,6 @@ async function updateData() {
                 .queue(elemShow('.top-container'))
         }
 
-        if ($('#team_1').text() != docData['team_1'] || $('#team_2').text() != docData['team_2']) {
-            minTimeout += 3000;
-            $('body')
-                .queue(elemHide('.top-container')).delay(500)
-                .queue(elemHide('.bottom-container')).delay(500)
-                .queue(elemHide('.main-container')).delay(500)
-                .queue(updateIcon('team_1_icon', docData['team_1']))
-                .queue(updateIcon('team_2_icon', docData['team_2']))
-                .queue(updateColors())
-                .queue(updateSpecific('team_1', 'team_1'))
-                .queue(updateSpecific('team_2', 'team_2'))
-                .queue(updateSpecific('team_1s', 'team_1s'))
-                .queue(updateSpecific('team_2s', 'team_2s'))
-                .queue(elemShow('.main-container')).delay(500)
-                .queue(elemShow('.bottom-container')).delay(500)
-                .queue(elemShow('.top-container')).delay(500)
-        }
-
         if ($('#team_1s').text() != docData['team_1s'] || $('#team_2s').text() != docData['team_2s']) {
             $('body')
                 .queue(updateSpecific('team_1s', 'team_1s'))
@@ -174,28 +186,56 @@ async function updateData() {
             minTimeout += 1000;
             $('body')
                 .queue(elemShow('.main-container')).delay(500)
-                .queue(elemShow('.bottom-container')).delay(500)
-                .queue(elemShow('.top-container'))
+                .queue(elemShow('.stopwatch-container'))
+                .queue(elemShow('.top-container')).delay(500)
+                .queue(elemShow('.timeout.right'))
+                .queue(elemShow('.timeout.left'))
         }
 
         if (docData['showStopwatch'] == true) {
-            if ($('.bottom-container').hasClass('hidden')) {
+            if ($('.stopwatch-container').hasClass('hidden')) {
                 minTimeout += 1000;
                 $('body')
-                    .queue(elemShow('.bottom-container')).delay(500)
+                    .queue(elemShow('.stopwatch-container'))
+                
+                if (docData['showBasketballStats'] == true) {
+                    $('body')
+                        .queue(elemShow('.timeout.left'))
+                        .queue(elemShow('.timeout.right')).delay(500)
+                }
             }
         } else {
-            if (!$('.bottom-container').hasClass('hidden')) {
+            if (!$('.stopwatch-container').hasClass('hidden')) {
                 minTimeout += 1000;
                 $('body')
-                    .queue(elemHide('.bottom-container')).delay(500)
+                    .queue(elemHide('.stopwatch-container'))
+                    .queue(elemHide('.timeout.left'))
+                    .queue(elemHide('.timeout.right')).delay(500)
+            }
+        }
+
+        if (docData['showBasketballStats'] == true && docData['showStopwatch'] == true) {
+            if ($('.timeout.left').hasClass('hidden')) {
+                minTimeout += 1000;
+                $('body')
+                    .queue(elemShow('.timeout.left'))
+                    .queue(elemShow('.timeout.right')).delay(500)
+            }
+        } else {
+            if (!$('.timeout.left').hasClass('hidden')) {
+                minTimeout += 1000;
+                $('body')
+                    .queue(elemHide('.timeout.left'))
+                    .queue(elemHide('.timeout.right')).delay(500)
             }
         }
     } else {
         minTimeout += 1000;
         $('body')
-            .queue(elemHide('.top-container')).delay(500)
-            .queue(elemHide('.bottom-container')).delay(500)
+            .queue(elemHide('.timeout.right'))
+            .queue(elemHide('.timeout.left')).delay(500)
+            .queue(elemHide('.top-container'))
+            .queue(elemHide('.stopwatch-container')).delay(500)
             .queue(elemHide('.main-container'))
             .queue(updateSpecific('team_1', 'team_1'))
             .queue(updateIcon('team_1_icon', docData['team_1']))
@@ -241,7 +281,7 @@ function elemHide(elem) {
 }
 
 function elemShow(elem) {
-    if (elem != '.bottom-container') {
+    if (elem != '.stopwatch-container') {
         return function (next) {
             $(elem).removeClass('fast hidden');	
             next();

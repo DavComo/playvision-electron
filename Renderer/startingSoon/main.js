@@ -115,7 +115,7 @@ async function updateData() {
         clockUpdating = true;
         updateClocks();
     }
-    await sleep(5000)
+    await sleep(1500)
     fetchData()
 }
 

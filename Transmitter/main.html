@@ -214,6 +214,23 @@
                                         <input type="text" class="input texts t1" id="side_1-name-scores">
                                         <input type="number" class="input input--number js-numberBoxTextInput" min="0" id="side_1-score">
                                         <span class="inputGroup-splitter"></span>
+                                        <div>
+                                            <button type="button" class="button score" id="side_1-plusOne" style="height: 18px; width: 100%">+1</button>
+                                            <button type="button" class="button score" id="side_1-minusOne" style="height: 18px; width: 100%;">-1</button>
+                                        </div>
+                                        <span class="inputGroup-splitter"></span>
+                                        <div>
+                                            <button type="button" class="button score" id="side_1-plusTwo" style="height: 18px; width: 100%;">+2</button>
+                                            <button type="button" class="button score" id="side_1-minusTwo" style="height: 18px; width: 100%;">-2</button>
+                                        </div>
+                                        <span class="inputGroup-splitter"></span>
+                                        <div>
+                                            <button type="button" class="button score" id="side_1-plusThree" style="height: 18px; width: 100%;">+3</button>
+                                            <button type="button" class="button score" id="side_1-minusThree" style="height: 18px; width: 100%;">-3</button>
+                                        </div>
+                                        <span class="inputGroup-splitter"></span>
+                                        <span class="inputGroup-splitter"></span>
+                                        <span class="inputGroup-splitter"></span>
                                         <span class="inputGroup-text">Fouls</span>
                                         <input type="number" class="input input--number js-numberBoxTextInput" min="0" id="side_1-fouls">
                                         <span class="inputGroup-splitter"></span>
@@ -224,6 +241,23 @@
                                         <span class="inputGroup-text">Side 2 Name & Score</span>
                                         <input type="text" class="input texts t1" id="side_2-name-scores">
                                         <input type="number" class="input input--number js-numberBoxTextInput" min="0" id="side_2-score">
+                                        <span class="inputGroup-splitter"></span>
+                                        <div>
+                                            <button type="button" class="button score" id="side_2-plusOne" style="height: 18px; width: 100%">+1</button>
+                                            <button type="button" class="button score" id="side_2-minusOne" style="height: 18px; width: 100%;">-1</button>
+                                        </div>
+                                        <span class="inputGroup-splitter"></span>
+                                        <div>
+                                            <button type="button" class="button score" id="side_2-plusTwo" style="height: 18px; width: 100%;">+2</button>
+                                            <button type="button" class="button score" id="side_2-minusTwo" style="height: 18px; width: 100%;">-2</button>
+                                        </div>
+                                        <span class="inputGroup-splitter"></span>
+                                        <div>
+                                            <button type="button" class="button score" id="side_2-plusThree" style="height: 18px; width: 100%;">+3</button>
+                                            <button type="button" class="button score" id="side_2-minusThree" style="height: 18px; width: 100%;">-3</button>
+                                        </div>
+                                        <span class="inputGroup-splitter"></span>
+                                        <span class="inputGroup-splitter"></span>
                                         <span class="inputGroup-splitter"></span>
                                         <span class="inputGroup-text">Fouls</span>
                                         <input type="number" class="input input--number js-numberBoxTextInput" min="0" id="side_2-fouls">
@@ -252,15 +286,20 @@
                             <hr class="formRowSep">
 
                             <dl class="formRow formRow--input">
-                                <dt style="padding-top: 17px;">
+                                <dt style="padding-top: 15px;">
                                     <div class="formRow-labelWrapper">
-                                        <label class="formRow-label">Show Game</label>
+                                        <label class="formRow-label">Show Sections</label>
                                     </div>
                                 </dt>
-                                <dd>
-                                    <div class="inputGroup inputGroup--joined">
-                                        <input type="checkbox" class="checks c1 clickToShow_1" id="showGame" style="height: 30px; width: 30px">
-                                    </div>
+                                <dd style="display: flex; flex-direction: row; justify-content: flex-start; align-items: center; gap: 10px;" class="excludeDoubleDot">
+                                    <label class="formRow-label">Scores</label>
+                                    <input type="checkbox" class="checks c1 clickToShow_1" id="showGame" style="height: 20px; width: 20px">
+
+                                    <label class="formRow-label" style="margin-left: 50px;">Bottom Bar</label>
+                                    <input type="checkbox" class="checks c1 clickToShow_1" id="showStopwatch" style="height: 20px; width: 20px">
+                                    
+                                    <label class="formRow-label"  style="margin-left: 50px;">Basketball Stats</label>
+                                    <input type="checkbox" class="checks c1 clickToShow_1" id="showBasketballStats" style="height: 20px; width: 20px">
                                 </dd>
                             </dl>
                         </div>
@@ -279,7 +318,7 @@
                                 </dt>
                                 <dd>
                                     <div class="inputGroup inputGroup--joined">
-                                        <input type="text" class="input texts t1" id="valueMs">
+                                        <input type="text" class="input texts t1" id="valueMs">         
                                         <span class="inputGroup-splitter"></span>
                                         <button type="button" class="start button" id="startAndStop">Start</button>
                                         <span class="inputGroup-splitter"></span>
@@ -329,21 +368,6 @@
                                 <dd>
                                     <div class="inputGroup inputGroup--joined">
                                         <input type="checkbox" class="checks c1 clickToShow_1" id="countingDown" style="height: 30px; width: 30px">
-                                    </div>
-                                </dd>
-                            </dl>
-
-                            <hr class="formRowSep">
-
-                            <dl class="formRow formRow--input">
-                                <dt style="padding-top: 17px;">
-                                    <div class="formRow-labelWrapper">
-                                        <label class="formRow-label">Show Stopwatch</label>
-                                    </div>
-                                </dt>
-                                <dd>
-                                    <div class="inputGroup inputGroup--joined">
-                                        <input type="checkbox" class="checks c1 clickToShow_1" id="showStopwatch" style="height: 30px; width: 30px">
                                     </div>
                                 </dd>
                             </dl>

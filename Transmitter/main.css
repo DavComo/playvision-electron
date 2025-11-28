@@ -79,7 +79,8 @@ select {
 [type=submit],
 button,
 html [type=button] {
-    -webkit-appearance: button
+    -webkit-appearance: button;
+    appearance: button;
 }
 
 [type=button]::-moz-focus-inner,
@@ -104,6 +105,7 @@ button:-moz-focusring {
 
 [type=search] {
     -webkit-appearance: textfield;
+    appearance: textfield;
     outline-offset: -2px
 }
 
@@ -1384,4 +1386,12 @@ select.input[size] {
 .infoBar {
     display: flex;
     justify-content: space-between;
+}
+
+.excludeDoubleDot label::after {
+    content: none !important;
+}
+
+button.score:hover {
+    background-color: #376a92;
 }

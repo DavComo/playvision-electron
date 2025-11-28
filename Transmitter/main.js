@@ -166,10 +166,11 @@ function initButtons() {
             Key: {
               "valueId": "gameScreen"
             },
-            UpdateExpression: ("set gameName = :r, showScore = :s, sideOneName = :t, sideTwoName = :u, sideOneScore = :v, sideTwoScore = :w, sideOneTimeouts = :a, sideTwoTimeouts = :b, sideOneFouls = :c, sideTwoFouls = :d, countingDown = :e, showStopwatch = :x, periodIntervalSeconds = :y, periodMark = :z"),
+            UpdateExpression: ("set gameName = :r, showScore = :s, showBasketballStats = :f, sideOneName = :t, sideTwoName = :u, sideOneScore = :v, sideTwoScore = :w, sideOneTimeouts = :a, sideTwoTimeouts = :b, sideOneFouls = :c, sideTwoFouls = :d, countingDown = :e, showStopwatch = :x, periodIntervalSeconds = :y, periodMark = :z"),
             ExpressionAttributeValues: {
                 ":r": document.getElementById("gameName").value,
                 ":s": document.getElementById("showGame").checked,
+                ":f": document.getElementById("showBasketballStats").checked,
                 ":t": document.getElementById("side_1-name-scores").value,
                 ":u": document.getElementById("side_2-name-scores").value,
                 ":v": parseInt(document.getElementById("side_1-score").value),
@@ -181,7 +182,8 @@ function initButtons() {
                 ":e": document.getElementById("countingDown").checked,
                 ":x": document.getElementById("showStopwatch").checked,
                 ":y": parseInt(document.getElementById("periodInterval").value),
-                ":z": document.getElementById("periodMark").value
+                ":z": document.getElementById("periodMark").value,
+
             },
             ReturnValues: "UPDATED_NEW"
           };
@@ -223,8 +225,137 @@ function initButtons() {
 
         document.getElementById("saveValues").innerText = "Save Values"
         document.getElementById("saveValues").style.removeProperty("background-color")
-        
     }
+
+    document.getElementById("side_1-plusOne").onclick = async function() {
+        var score = parseInt(document.getElementById("side_1-score").value);
+        
+        score += 1;
+
+        document.getElementById("side_1-score").value = score;
+        changeScore(1, score)
+    }
+
+    document.getElementById("side_1-plusTwo").onclick = async function() {
+        var score = parseInt(document.getElementById("side_1-score").value);
+        
+        score += 2;
+
+        document.getElementById("side_1-score").value = score;
+        changeScore(1, score)
+    }
+
+    document.getElementById("side_1-plusThree").onclick = async function() {
+        var score = parseInt(document.getElementById("side_1-score").value);
+        
+        score += 3;
+
+        document.getElementById("side_1-score").value = score;
+        changeScore(1, score)
+    }
+
+    document.getElementById("side_2-plusOne").onclick = async function() {
+        var score = parseInt(document.getElementById("side_2-score").value);
+        
+        score += 1;
+
+        document.getElementById("side_2-score").value = score;
+        changeScore(2, score)
+    }
+
+    document.getElementById("side_2-plusTwo").onclick = async function() {
+        var score = parseInt(document.getElementById("side_2-score").value);
+        
+        score += 2;
+
+        document.getElementById("side_2-score").value = score;
+        changeScore(2, score)
+    }
+
+    document.getElementById("side_2-plusThree").onclick = async function() {
+        var score = parseInt(document.getElementById("side_2-score").value);
+        
+        score += 3;
+
+        document.getElementById("side_2-score").value = score;
+        changeScore(2, score)
+    }
+
+    document.getElementById("side_1-minusOne").onclick = async function() {
+        var score = parseInt(document.getElementById("side_1-score").value);
+        
+        score -= 1;
+
+        document.getElementById("side_1-score").value = score;
+        changeScore(1, score)
+    }
+
+    document.getElementById("side_1-minusTwo").onclick = async function() {
+        var score = parseInt(document.getElementById("side_1-score").value);
+        
+        score -= 2;
+
+        document.getElementById("side_1-score").value = score;
+        changeScore(1, score)
+    }
+
+    document.getElementById("side_1-minusThree").onclick = async function() {
+        var score = parseInt(document.getElementById("side_1-score").value);
+        
+        score -= 3;
+
+        document.getElementById("side_1-score").value = score;
+        changeScore(1, score)
+    }
+
+    document.getElementById("side_2-minusOne").onclick = async function() {
+        var score = parseInt(document.getElementById("side_2-score").value);
+        
+        score -= 1;
+
+        document.getElementById("side_2-score").value = score;
+        changeScore(2, score)
+    }
+
+    document.getElementById("side_2-minusTwo").onclick = async function() {
+        var score = parseInt(document.getElementById("side_2-score").value);
+        
+        score -= 2;
+
+        document.getElementById("side_2-score").value = score;
+        changeScore(2, score)
+    }
+
+    document.getElementById("side_2-minusThree").onclick = async function() {
+        var score = parseInt(document.getElementById("side_2-score").value);
+        
+        score -= 3;
+
+        document.getElementById("side_2-score").value = score;
+        changeScore(2, score)
+    }
+}
+
+function changeScore(side, value) {
+    var sideText;
+    if (side == 1) {
+        sideText = "sideOneScore"
+    } else {
+        sideText = "sideTwoScore"
+    }
+    var params = {
+        TableName: tableName,
+        Key: {
+            "valueId": "gameScreen"
+        },
+        UpdateExpression: (`set ${sideText} = :v`),
+        ExpressionAttributeValues: {
+            ":v": value,
+        },
+        ReturnValues: "UPDATED_NEW"
+        };
+        
+    dynamoClient.update(params, function(err, data) {});
 }
 
 
@@ -251,7 +382,6 @@ function fetchData() {
                 document.getElementById('serverStatus').innerText = "Enter Database ID and Sync"
             }
         } else {
-            // Update the UI with the fetched data
             document.getElementById('serverStatus').style.color = "green"
             document.getElementById('serverStatus').innerText = "Connected to " + tableName
             docDataTempTemp = data.Items;
@@ -279,6 +409,7 @@ function updateData() {
         "team_2_fouls" : docDataTemp['gameScreen']['sideTwoFouls'].N,
         "gameName_1" : docDataTemp['gameScreen']['gameName'].S,
         "hide_1" : docDataTemp['gameScreen']['showScore'].BOOL,
+        "showBasketballStats" : docDataTemp['gameScreen']['showBasketballStats'].BOOL,
         "stopwatchms" : docDataTemp['gameScreen']['stopwatchValueMs'].N,
         "stopwatchrunning" : docDataTemp['gameScreen']['stopwatchRunning'].BOOL,
         "startedAt" : docDataTemp['gameScreen']['stopwatchStartedAt'].N,
@@ -418,6 +549,7 @@ function updateData() {
     document.getElementById("gameName").value = docData["gameName_1"];
 
     document.getElementById("showGame").checked = docData["hide_1"];
+    document.getElementById("showBasketballStats").checked = docData["showBasketballStats"];
 
     //Stopwatch
     if (document.getElementById("valueMs").value == "Loading...") {

@@ -128,19 +128,18 @@ img {
 .bottom-container {
     width: auto;
     height: 35px;
-    background-color: white;
     clip-path: polygon(0% 0%, 2% 100%, 98% 100%, 100% 0%);
     display: flex;
     align-content: center;
     justify-content: center;
-    border: 3px white solid;
     margin-bottom: auto;
     margin-top: -3px;
     z-index: -1;
 }
 
 .bottom-colored {
-    width: 160px;
+    padding-top: 2px;
+    width: 170px;
     height: 35px;
     clip-path: polygon(0% 0%, 5% 100%, 95% 100%, 100% 0%);
     display: flex;
@@ -151,23 +150,28 @@ img {
 .bottom-colored.timeout.left {
     width: 350px;
     height: 35px;
-    clip-path: polygon(0% 0%, 5% 100%, 100% 100%, 98% 0%);
+    clip-path: polygon(0% 0%, 5% 100%, 100% 100%, 100% 0%);
     display: flex;
     justify-content: center;
     align-content: center;
-    margin-right: -5px;
+    margin-right: -9px;
     z-index: -1;
 }
 
 .bottom-colored.timeout.right {
     width: 350px;
     height: 35px;
-    clip-path: polygon(2% 0%, 0% 100%, 95% 100%, 100% 0%);
+    clip-path: polygon(0% 0%, 0% 100%, 95% 100%, 100% 0%);
     display: flex;
     justify-content: center;
     align-content: center;
-    margin-left: -5px;
+    margin-left: -9px;
     z-index: -1;
+}
+
+.bottom-colored.timeout.hidden {
+    margin-top: -80px;
+    margin-bottom: 0px;
 }
 
 .bottom-colored b {
@@ -181,7 +185,7 @@ img {
     margin-bottom: 100px;
 }
 
-.bottom-container.hidden {
+.stopwatch-container.hidden {
     margin-top: -80px;
     margin-bottom: 0px;
 }

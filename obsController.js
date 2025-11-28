@@ -4,6 +4,10 @@ let websocketConnected = false;
 let existingScenes = [];
 let lastUpdated = Infinity;
 
+const updateInterval = 250;
+const miniScenesMultiplier = 4; //miniScenesMultiplier * updateInterval = mini scene update interval
+
+
 async function connectOBS() {
     try {
         await obs.connect();
@@ -158,7 +162,7 @@ async function updatePreviews() {
         }
     }
 
-    if (lastUpdated >= 4) {
+    if (lastUpdated >= miniScenesMultiplier) {
         for (let i = 0; i < document.getElementById('scenePreviewContainer').childElementCount; i++) {
             let scenePreviewInstance = document.getElementById('scenePreviewContainer').children[i];
             screenshot = await getSceneScreenshot(scenePreviewInstance.id);
@@ -305,7 +309,7 @@ obs.on('CurrentSceneTransitionChanged', (data) => {
 // Connect to OBS and get the screenshot
 connectOBS().then(async () => {
     setInitialValues();
-    setInterval(updateEverything, 500);
+    setInterval(updateEverything, updateInterval);
 });
 
 
