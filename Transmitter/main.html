@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="height: 100%;">
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description"
@@ -15,7 +15,7 @@
 
 
     
-    <body style="background-color: #f0f0f0; margin-top: -20px;">
+    <body style="background-color: rgb(44, 46, 56); padding-bottom: 2px; height: fit-content; min-height: 100%;">
         <div class="blur" id="blurrableElement">
             <!-- Navigation Bar -->
             <header class="tabs tabs--standalone navbar" style="border-top: none; -webkit-app-region: drag; position: sticky; top: 0; z-index: 999;">
@@ -41,10 +41,15 @@
 
                 <div class="infoBar">
                     <span class="tabs-tab noHover" style="margin-right: 10px; margin-left: auto; margin-top: auto; margin-bottom: auto;" id="serverStatus"></span>
-                    <input class="tabs-tab" style="margin-right: 10px; margin-left: 0px; margin-top: auto; margin-bottom: auto; cursor: text;" id="serverName">
-                    <button class="button--primary button button--icon" style="width:fit-content; margin-bottom: auto; margin-right: 5px; background-color:#1E6FB3; border-color: #1E6FB3; margin-top: auto; height: 30px; -webkit-app-region: no-drag;"  id="resetValues">
+                    <input class="tabs-tab" style="margin-right: 5px; margin-left: 0px; margin-top: auto; margin-bottom: auto; cursor: text; border: 2px solid rgb(153, 153, 153); border-radius: 2px; height: 30px; margin-top: auto; margin-bottom: auto; color: black;" id="serverName">
+                    <button class="button--primary button button--icon" style="width:fit-content; margin-bottom: auto; margin-right: 25px; background-color:#1E6FB3; border-color: #1E6FB3; margin-top: auto; height: 30px; -webkit-app-region: no-drag;"  id="resetValues">
                         <span>
                             Sync/Reset Values
+                        </span>
+                    </button>
+                    <button type="submit" class="button--primary button button--icon" id="saveValues" style="width:120px; margin-bottom: auto; margin-right: 5px; margin-top: auto; height: 30px; -webkit-app-region: no-drag; background-color: #264f71;">
+                        <span>
+                            Save Values
                         </span>
                     </button>
                 </div>  
@@ -346,17 +351,6 @@
                     </div>
                 </li>
             </ul>
-
-            <div class="formSubmitRow-main">
-                <div class="formSubmitRow-bar"></div>
-                <div class="formSubmitRow-controls" style="padding-left: 0px;">
-                    <button type="submit" class="button--primary button button--icon button--icon--save" id="saveValues" style="display: block; margin-left: auto; margin-right: auto;">
-                        <span>
-                            Save Values
-                        </span>
-                    </button>
-                </div>
-            </div>
         </div>
     </body>
 </html>
