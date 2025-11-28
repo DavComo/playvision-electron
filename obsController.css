@@ -187,7 +187,7 @@ body {
 .list-title {
     background-color: rgb(60, 64, 77);
     width: calc(100% - 15px);
-    height: 15px;
+    height: auto;
     font-size: 13px;
     font-weight: 900;
     font-family: sans-serif;

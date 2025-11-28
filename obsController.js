@@ -68,12 +68,8 @@ async function setInitialValues() {
         let scenePreviewInstance = document.createElement('img');
         
         scenePreviewInstance.onclick = switchPreviewInstance;
-        if (await window.myStore.get("previewInstance_" + i)) {
-            scenePreviewInstance.id = await window.myStore.get("previewInstance_" + i);
-        } else {
-            scenePreviewInstance.id = scene.sceneName;
-            window.myStore.set("previewInstance_" + i, scene.sceneName);
-        }
+        scenePreviewInstance.id = scene.sceneName;
+        window.myStore.set("previewInstance_" + i, scene.sceneName);
         scenePreviewInstance.src = "";
         if (scene.sceneName == response.currentPreviewSceneName) {
             scenePreviewInstance.classList.add('preview');
