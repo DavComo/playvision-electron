@@ -1,7 +1,7 @@
 body {
     margin: 0;
     margin-top: 10px;
-    background-color: rgb(44, 46, 56);
+    background-color: transparent;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
@@ -413,4 +413,8 @@ body {
 
 #scenePreviewContainer img:first-child {
     margin-left: 0;
+}
+
+::-webkit-scrollbar {
+    display: none;
 }

@@ -1395,3 +1395,7 @@ select.input[size] {
 button.score:hover {
     background-color: #376a92;
 }
+
+::-webkit-scrollbar {
+    display: none;
+}
