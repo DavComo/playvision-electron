@@ -231,6 +231,9 @@ function initButtons() {
         var score = parseInt(document.getElementById("side_1-score").value);
         
         score += 1;
+        if (score < 0) {
+            score = 0
+        }
 
         document.getElementById("side_1-score").value = score;
         changeScore(1, score)
@@ -240,6 +243,10 @@ function initButtons() {
         var score = parseInt(document.getElementById("side_1-score").value);
         
         score += 2;
+        if (score < 0) {
+            score = 0
+        }
+
 
         document.getElementById("side_1-score").value = score;
         changeScore(1, score)
@@ -249,6 +256,10 @@ function initButtons() {
         var score = parseInt(document.getElementById("side_1-score").value);
         
         score += 3;
+        if (score < 0) {
+            score = 0
+        }
+
 
         document.getElementById("side_1-score").value = score;
         changeScore(1, score)
@@ -258,6 +269,10 @@ function initButtons() {
         var score = parseInt(document.getElementById("side_2-score").value);
         
         score += 1;
+        if (score < 0) {
+            score = 0
+        }
+
 
         document.getElementById("side_2-score").value = score;
         changeScore(2, score)
@@ -267,6 +282,10 @@ function initButtons() {
         var score = parseInt(document.getElementById("side_2-score").value);
         
         score += 2;
+        if (score < 0) {
+            score = 0
+        }
+
 
         document.getElementById("side_2-score").value = score;
         changeScore(2, score)
@@ -276,6 +295,10 @@ function initButtons() {
         var score = parseInt(document.getElementById("side_2-score").value);
         
         score += 3;
+        if (score < 0) {
+            score = 0
+        }
+
 
         document.getElementById("side_2-score").value = score;
         changeScore(2, score)
@@ -285,6 +308,10 @@ function initButtons() {
         var score = parseInt(document.getElementById("side_1-score").value);
         
         score -= 1;
+        if (score < 0) {
+            score = 0
+        }
+
 
         document.getElementById("side_1-score").value = score;
         changeScore(1, score)
@@ -294,6 +321,10 @@ function initButtons() {
         var score = parseInt(document.getElementById("side_1-score").value);
         
         score -= 2;
+        if (score < 0) {
+            score = 0
+        }
+
 
         document.getElementById("side_1-score").value = score;
         changeScore(1, score)
@@ -303,6 +334,10 @@ function initButtons() {
         var score = parseInt(document.getElementById("side_1-score").value);
         
         score -= 3;
+        if (score < 0) {
+            score = 0
+        }
+
 
         document.getElementById("side_1-score").value = score;
         changeScore(1, score)
@@ -312,6 +347,10 @@ function initButtons() {
         var score = parseInt(document.getElementById("side_2-score").value);
         
         score -= 1;
+        if (score < 0) {
+            score = 0
+        }
+
 
         document.getElementById("side_2-score").value = score;
         changeScore(2, score)
@@ -321,6 +360,10 @@ function initButtons() {
         var score = parseInt(document.getElementById("side_2-score").value);
         
         score -= 2;
+        if (score < 0) {
+            score = 0
+        }
+
 
         document.getElementById("side_2-score").value = score;
         changeScore(2, score)
@@ -330,6 +373,10 @@ function initButtons() {
         var score = parseInt(document.getElementById("side_2-score").value);
         
         score -= 3;
+        if (score < 0) {
+            score = 0
+        }
+
 
         document.getElementById("side_2-score").value = score;
         changeScore(2, score)
