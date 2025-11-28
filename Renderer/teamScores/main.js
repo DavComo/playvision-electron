@@ -309,7 +309,7 @@ function updateSpecific(htmlelem, docelem) {
 
 function updateIcon(htmlelem, schoolName) {
     return function(next) {
-        $('#' + htmlelem).attr('src', '/Renderer/teamScores/' + schoolName + '_Logo-200x200.png');
+        $('#' + htmlelem).attr('src', '/Images/SchoolIcons/' + schoolName + '_Logo-200x200.png');
         next();
     }
 }

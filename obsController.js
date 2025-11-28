@@ -77,7 +77,9 @@ async function setInitialValues() {
         if (scene.sceneName == response.currentProgramSceneName) {
             scenePreviewInstance.classList.add('program');
         }
-        if (document.getElementById('scenePreviewContainer').childElementCount <= 4) {document.getElementById('scenePreviewContainer').appendChild(scenePreviewInstance);}
+        if (document.getElementById('scenePreviewContainer').childElementCount <= 4) {
+            document.getElementById('scenePreviewContainer').appendChild(scenePreviewInstance);
+        }
 
 
         if (existingScenes.includes(scene.sceneName)) {
@@ -96,14 +98,16 @@ async function setInitialValues() {
     response = await obs.call('GetCurrentPreviewScene');
     if (document.getElementById(response.currentPreviewSceneName)) {
         document.getElementById(response.currentPreviewSceneName).classList.add('preview');
-        document.querySelector(`[data-scene-uuid="${response.sceneUuid}"]`).classList.add('selectedPreview');
     }
+    document.querySelector(`[data-scene-uuid="${response.sceneUuid}"]`).classList.add('selectedPreview');
+
 
     response = await obs.call('GetCurrentProgramScene');
     if (document.getElementById(response.currentProgramSceneName)) {
         document.getElementById(response.currentProgramSceneName).classList.add('program');
-        document.querySelector(`[data-scene-uuid="${response.sceneUuid}"]`).classList.add('selectedProgram');
     }
+    document.querySelector(`[data-scene-uuid="${response.sceneUuid}"]`).classList.add('selectedProgram');
+
 
 
     response = await obs.call('GetSceneTransitionList');
