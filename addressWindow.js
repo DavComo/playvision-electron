@@ -39,7 +39,6 @@ const validateLicenseKey = async function (key) {
         document.getElementById("licenseKeyInfo").innerText = 'Valid License Key!'
         const responseJson = await accessKeyReponse.json()
         console.log(responseJson);
-        window.ipc.send('valid-license-key', { responseJson });
 
         formattedData = {
             dbName: `${responseJson.defaultStream}`,
@@ -55,6 +54,7 @@ const validateLicenseKey = async function (key) {
         console.log("dawwad");
         
         window.fileAPI.saveData('.streamData.json', formattedData)
+        window.ipc.send('valid-license-key', { responseJson });
     } else {
         document.getElementById("licenseKey").style["borderColor"] = 'red'
         document.getElementById("licenseKeyInfo").style["color"] = 'red'
