@@ -196,8 +196,7 @@ function createWindow() {
                 settingsOpened = false;
             });
         }},
-        {type: 'separator'},
-        {role:'toggleDevTools'}
+        {type: 'separator'}
         ]
     },
     {
