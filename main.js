@@ -440,7 +440,18 @@ app.whenReady().then(() => {
         console.log(`Server is running at http://localhost:${port}`);
     }).on('error', (err) => {
         if (err.code === 'EADDRINUSE') {
-            throw new Error(`Port ${port} is already in use. Please kill the process using this port or change the port in the code.`);
+
+            const result = dialog.showMessageBoxSync({
+                type: 'question',
+                buttons: ['OK'],
+                defaultId: 0,
+                title: 'Port In Use',
+                message: `Port ${port} is already in use. Please kill the process using it and relaunch PlayVision.`
+            })
+
+            if (result === 0) {
+                app.exit()
+            }
         } else {
             console.error(err);
         }
