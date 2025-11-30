@@ -22,15 +22,15 @@ window.addEventListener('message', event => {
 async function init(responseJson) {  
     if (responseJson == "") {
         var data = await window.fileAPI.loadData(".licenseKey.json")
-        if (data.ok == false) {
+        const accessKeyReponse = await fetch("https://lgphy9q5lb.execute-api.eu-central-1.amazonaws.com/?licenseKey=" + data.data.licenseKey)
+        responseJson = await accessKeyReponse.json()
+        if (data.ok == false || accessKeyReponse.status != 200) {
             window.parent.postMessage({
                 type: "show-alert",
-                message: "Enter license key in settings."
+                message: "Enter valid license key in settings."
             }, "*");
             return
         }
-        const accessKeyReponse = await fetch("https://lgphy9q5lb.execute-api.eu-central-1.amazonaws.com/?licenseKey=" + data.data.licenseKey)
-        responseJson = await accessKeyReponse.json()
     }
 
     var inputs = document.getElementsByTagName("input")
@@ -432,6 +432,18 @@ function initButtons() {
     
     document.getElementById("side_2-matchTheme").onclick = async function() {
         document.getElementById("side_2-theme").disabled = document.getElementById("side_2-matchTheme").checked
+    }
+
+    document.getElementById("side_1-zero").onclick = async function() {
+        document.getElementById("side_1-score").value = 0
+        document.getElementById("side_1-fouls").value = 0
+        document.getElementById("side_1-timeouts").value = 0
+    }
+
+    document.getElementById("side_2-zero").onclick = async function() {
+        document.getElementById("side_2-score").value = 0
+        document.getElementById("side_2-fouls").value = 0
+        document.getElementById("side_2-timeouts").value = 0
     }
 }
 

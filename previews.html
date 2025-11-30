@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html style="width: 100%; height: 100%;">
     <head>
         <style>
             .grid-container {
                 display: grid;
                 gap: 10px;
-                height: 2880px;
-                width: 5120px;
             }
 
             iframe {
@@ -16,21 +14,26 @@
 
             .overlay-text {
                 font-size: 300px;
-                width: 2560px;
-                height: 1440px;
+                width: 50vw;
+                height: 50vh;
                 align-content: center;
                 text-align: center;
                 color: rgba(255, 255, 255, 0.245);
                 font-family: Arial, Helvetica, sans-serif;
             }
+
+            .preview-frame {
+                height: 50vh; 
+                width: 50vw;
+            }
         </style>
     </head>
-    <body style="background-color: black;">
+    <body style="background-color: black; height: 100%; width: 100%;">
         <div class="grid-container" style="background-color: black; justify-content: center; align-items: center; position: absolute;">
-            <iframe src="http://localhost:5500/Renderer/teamScores/main.html" height="1440px" width="2560px" style="grid-row: 1; grid-column: 2;"></iframe>
-            <iframe src="http://localhost:5500/Renderer/eventName/main.html" height="1440px" width="2560px" style="grid-row: 2; grid-column: 1;"></iframe>
-            <iframe src="http://localhost:5500/Renderer/startingSoon/main.html" height="1440px" width="2560px" style="grid-row: 1; grid-column: 1;"></iframe>
-            <iframe  height="1440px" width="2560px" style="grid-row: 2; grid-column: 2;"></iframe>
+            <iframe src="http://localhost:5500/Renderer/teamScores/main.html" style="grid-row: 1; grid-column: 2" class="preview-frame"></iframe>
+            <iframe src="http://localhost:5500/Renderer/eventName/main.html" style="grid-row: 2; grid-column: 1" class="preview-frame"></iframe>
+            <iframe src="http://localhost:5500/Renderer/startingSoon/main.html" style="grid-row: 1; grid-column: 1" class="preview-frame"></iframe>
+            <iframe style="grid-row: 2; grid-column: 2" class="preview-frame"></iframe>
         </div>
         <div class="grid-container" style="background-color: transparent; justify-content: center; align-items: center; position: absolute;">
             <b style="grid-row: 1; grid-column: 1;" class="overlay-text">Countdown</b>

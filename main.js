@@ -115,6 +115,11 @@ ipcMain.handle("show-alert", async (event, options) => {
     });
 });
 
+ipcMain.on('restart', (event, key, value) => {
+    app.relaunch()
+    app.exit()
+});
+
 let pythonProcess;
 
 function createWindow() {
@@ -196,7 +201,8 @@ function createWindow() {
                 settingsOpened = false;
             });
         }},
-        {type: 'separator'}
+        {type: 'separator'},
+        {role: 'toggleDevTools'}
         ]
     },
     {
@@ -226,14 +232,16 @@ function createWindow() {
                     });
 
                     let previews = new BrowserWindow({
-                        width: 1285,
-                        height: 755,
+                        width: 1280,
+                        height: 720,
+                        minWidth: 1280,
+                        useContentSize: true,
+                        resizable: true,
                         title: "PlayVision - Overlay Previews",
                         webPreferences: {
                             nodeIntegration: false,
-                            contextIsolation: false,
-                            enableRemoteModule: true,
-                            zoomFactor: 0.234375, // 1200/2560 = 0.46875 to scale down 2560x1440 to 1200x800
+                            contextIsolation: true,
+                            enableRemoteModule: false
                         },
                         show: false
                     });
@@ -256,7 +264,6 @@ function createWindow() {
                     previews.webContents.on('did-finish-load', () => {
                         previewLoading.close();
                         previews.show();
-                        previews.webContents.setZoomFactor(0.234375); // Set the zoom factor to scale the content down
                     });
 
                     previews.on('closed', () => {

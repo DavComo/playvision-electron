@@ -15,8 +15,18 @@ window.saveValue = async function (value, key, element) {
 }
 
 window.saveLicenseKey = async function () {
+    var oldKey = (await window.fileAPI.loadData('.licenseKey.json')).data.licenseKey
     key = document.getElementById("licenseKey").value
-    validateLicenseKey(key)
+    var valid = (await validateLicenseKey(key)).valid
+    if (valid && key != oldKey) {
+        document.getElementById("licenseKeyInfo").innerText = 'Valid License Key! Restarting in 3...'
+        await sleep(1000)
+        document.getElementById("licenseKeyInfo").innerText = 'Valid License Key! Restarting in 2...'
+        await sleep(1000)
+        document.getElementById("licenseKeyInfo").innerText = 'Valid License Key! Restarting in 1...'
+        await sleep(1000)
+        window.ipc.send('restart', {});
+    }
 }
 
 const validateLicenseKey = async function (key) {
@@ -38,7 +48,6 @@ const validateLicenseKey = async function (key) {
         document.getElementById("licenseKeyInfo").style["color"] = 'green'
         document.getElementById("licenseKeyInfo").innerText = 'Valid License Key!'
         const responseJson = await accessKeyReponse.json()
-        console.log(responseJson);
 
         formattedData = {
             dbName: `${responseJson.defaultStream}`,
@@ -51,19 +60,21 @@ const validateLicenseKey = async function (key) {
         if (data.ok == true) {
             formattedData.dbName = data.data.dbName
         }
-        console.log("dawwad");
-        
         window.fileAPI.saveData('.streamData.json', formattedData)
         window.ipc.send('valid-license-key', { responseJson });
+        document.getElementById("licenseKey").disabled = false
+        document.getElementById("licenseKeyButton").disabled = false
+
+        return {"valid":true}
     } else {
         document.getElementById("licenseKey").style["borderColor"] = 'red'
         document.getElementById("licenseKeyInfo").style["color"] = 'red'
         document.getElementById("licenseKeyInfo").innerText = 'Invalid License Key'
+        document.getElementById("licenseKey").disabled = false
+        document.getElementById("licenseKeyButton").disabled = false
+
+        return {"valid":false}
     }
-
-    document.getElementById("licenseKey").disabled = false
-    document.getElementById("licenseKeyButton").disabled = false
-
 }
 
 window.onload = async function () {
@@ -105,4 +116,8 @@ window.onload = async function () {
     if (data.ok == true) {
         validateLicenseKey(data.data.licenseKey)
     }
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
