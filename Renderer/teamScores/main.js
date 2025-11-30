@@ -11,6 +11,8 @@ var dynamodb;
 var dynamoClient;
 var docDataTempTemp;
 var streamData;
+var sideOneTheme;
+var sideTwoTheme;
 
 async function fetchData() {
     var dbName = (await getConfig()).dbName
@@ -116,6 +118,8 @@ async function updateData() {
         "team_2" : docDataTemp['gameScreen']['sideTwoName'].S,
         "team_1s" : docDataTemp['gameScreen']['sideOneScore'].N,
         "team_2s" : docDataTemp['gameScreen']['sideTwoScore'].N,
+        "team_1_theme" : docDataTemp['gameScreen']['sideOneTheme'].S,
+        "team_2_theme" : docDataTemp['gameScreen']['sideTwoTheme'].S,
         "team_1_tos" : docDataTemp['gameScreen']['sideOneTimeouts'].N,
         "team_2_tos" : docDataTemp['gameScreen']['sideTwoTimeouts'].N,
         "team_1_fouls" : docDataTemp['gameScreen']['sideOneFouls'].N,
@@ -143,9 +147,11 @@ async function updateData() {
     updateStopwatch(docData);
 
     if (docData['hide_1'] == false) {
-        if ($('#team_1').text() != docData['team_1'] || $('#team_2').text() != docData['team_2']) {
+        if ($('#team_1').text() != docData['team_1'] || $('#team_2').text() != docData['team_2'] || sideOneTheme != docData['team_1_theme'] || sideTwoTheme != docData['team_2_theme']) {
             minTimeout += 3000;
             await new Promise(resolve => { 
+                sideOneTheme = docData['team_1_theme']
+                sideTwoTheme = docData['team_2_theme']
                 $('body')
                     .queue(elemHide('.timeout.right'))
                     .queue(elemHide('.timeout.left')).delay(500)
@@ -153,8 +159,8 @@ async function updateData() {
                     .queue(elemHide('.stopwatch-container')).delay(500)
                     .queue(elemHide('.main-container')).delay(500)
                     .queue(updateSpecific('gameName', 'gameName_1'))
-                    .queue(updateIcon('team_1_icon', docData['team_1']))
-                    .queue(updateIcon('team_2_icon', docData['team_2']))
+                    .queue(updateIcon('team_1_icon', docData['team_1_theme']))
+                    .queue(updateIcon('team_2_icon', docData['team_2_theme']))
                     .queue(updateColors())
                     .queue(updateSpecific('team_1', 'team_1'))
                     .queue(updateSpecific('team_2', 'team_2'))
@@ -241,6 +247,8 @@ async function updateData() {
         }
     } else {
         minTimeout += 1000;
+        sideOneTheme = docData['team_1_theme']
+        sideTwoTheme = docData['team_2_theme']
         $('body')
             .queue(elemHide('.timeout.right'))
             .queue(elemHide('.timeout.left')).delay(500)
@@ -248,8 +256,8 @@ async function updateData() {
             .queue(elemHide('.stopwatch-container')).delay(500)
             .queue(elemHide('.main-container'))
             .queue(updateSpecific('team_1', 'team_1'))
-            .queue(updateIcon('team_1_icon', docData['team_1']))
-            .queue(updateIcon('team_2_icon', docData['team_2']))
+            .queue(updateIcon('team_1_icon', docData['team_1_theme']))
+            .queue(updateIcon('team_2_icon', docData['team_2_theme']))
             .queue(updateColors())
             .queue(updateSpecific('team_2', 'team_2'))
             .queue(updateSpecific('team_1s', 'team_1s'))
@@ -326,8 +334,8 @@ function updateIcon(htmlelem, schoolName) {
 
 function updateColors() {
     return function(next) {
-        var schoolName_left = docData['team_1'];
-        var schoolName_right = docData['team_2'];
+        var schoolName_left = docData['team_1_theme'];
+        var schoolName_right = docData['team_2_theme'];
         //Left side first
         $('#score-block-left').css('background-color', colors[schoolName_left.toLowerCase() + '_secondary']);
         $('#team_1').css('color', colors[schoolName_left.toLowerCase() + '_secondary']);

@@ -502,9 +502,10 @@ body {
 .input.input--number,
 .input[type=number] {
     text-align: right;
-    max-width: 50px;
+    max-width: 70px;
     padding-right: 10px;
-    font-size: 15px
+    font-size: 15px;
+    text-align: right;
 }
 
 .input.input--select,
@@ -1399,3 +1400,8 @@ button.score:hover {
 ::-webkit-scrollbar {
     display: none;
 }
+
+input::-webkit-outer-spin-button, 
+input::-webkit-inner-spin-button { 
+    margin-left: 5px; 
+} 

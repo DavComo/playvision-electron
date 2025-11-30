@@ -40,6 +40,7 @@ body {
     display: flex;
     flex-direction: row-reverse;
     position: absolute;
+    clip-path: polygon(0% 0%, 5% 100%, 100% 100%, 100% 0%);
 }
 
 .score-container-right {
@@ -47,11 +48,12 @@ body {
     height: 91px;
     display: flex;
     position: absolute;
+    clip-path: polygon(0% 0%, 0% 100%, 95% 100%, 100% 0%);
 }
 
 .score-block {
     height: 90px;
-    width: 140px;
+    min-width: 140px;
     display: flex;
     flex-wrap: wrap;
     font-size: 80px;
@@ -85,6 +87,8 @@ body {
     height: 91px;
     align-content: center;
     flex-wrap: wrap;
+    position: fixed;
+    z-index: -1;
 }
 
 img {

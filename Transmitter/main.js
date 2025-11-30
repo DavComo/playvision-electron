@@ -165,12 +165,48 @@ function initButtons() {
           
         dynamoClient.update(params, function(err, data) {});
 
+        var sideOneTheme;
+        var sideTwoTheme;
+
+        if (document.getElementById("side_1-matchTheme").checked) {
+            sideOneTheme = document.getElementById("side_1-name-scores").value
+            var opts = document.getElementById("side_1-theme").options
+            const vals = Array.from(opts)
+                .map(el => el.value); 
+            if (vals.includes(sideOneTheme)) {
+                document.getElementById("side_1-theme").value = sideOneTheme
+            } else {
+                sideOneTheme = document.getElementById("side_1-theme").value
+                document.getElementById("side_1-matchTheme").checked = false
+                document.getElementById("side_1-theme").disabled = false
+            }
+        } else {
+            sideOneTheme = document.getElementById("side_1-theme").value
+        }
+        if (document.getElementById("side_2-matchTheme").checked) {
+            sideTwoTheme = document.getElementById("side_2-name-scores").value
+            var opts = document.getElementById("side_2-theme").options
+            const vals = Array.from(opts)
+                .map(el => el.value); 
+            if (vals.includes(sideTwoTheme)) {
+                document.getElementById("side_2-theme").value = sideTwoTheme
+            } else {
+                sideTwoTheme = document.getElementById("side_2-theme").value
+                document.getElementById("side_2-matchTheme").checked = false
+                document.getElementById("side_2-theme").disabled = false
+            }
+        } else {
+            sideTwoTheme = document.getElementById("side_2-theme").value
+        }
+
+        
+
         var params = {
             TableName: tableName,
             Key: {
               "valueId": "gameScreen"
             },
-            UpdateExpression: ("set gameName = :r, showScore = :s, showBasketballStats = :f, sideOneName = :t, sideTwoName = :u, sideOneScore = :v, sideTwoScore = :w, sideOneTimeouts = :a, sideTwoTimeouts = :b, sideOneFouls = :c, sideTwoFouls = :d, countingDown = :e, showStopwatch = :x, periodIntervalSeconds = :y, periodMark = :z"),
+            UpdateExpression: ("set gameName = :r, showScore = :s, showBasketballStats = :f, sideOneName = :t, sideTwoName = :u, sideOneScore = :v, sideTwoScore = :w, sideOneTimeouts = :a, sideTwoTimeouts = :b, sideOneFouls = :c, sideTwoFouls = :d, sideOneTheme = :g, sideTwoTheme = :h, sideOneMatchTheme = :i, sideTwoMatchTheme = :j, countingDown = :e, showStopwatch = :x, periodIntervalSeconds = :y, periodMark = :z"),
             ExpressionAttributeValues: {
                 ":r": document.getElementById("gameName").value,
                 ":s": document.getElementById("showGame").checked,
@@ -183,6 +219,10 @@ function initButtons() {
                 ":b": parseInt(document.getElementById("side_2-timeouts").value),
                 ":c": parseInt(document.getElementById("side_1-fouls").value),
                 ":d": parseInt(document.getElementById("side_2-fouls").value),
+                ":g": sideOneTheme,
+                ":h": sideTwoTheme,
+                ":i": document.getElementById("side_1-matchTheme").checked,
+                ":j": document.getElementById("side_2-matchTheme").checked,
                 ":e": document.getElementById("countingDown").checked,
                 ":x": document.getElementById("showStopwatch").checked,
                 ":y": parseInt(document.getElementById("periodInterval").value),
@@ -385,6 +425,14 @@ function initButtons() {
         document.getElementById("side_2-score").value = score;
         changeScore(2, score)
     }
+
+    document.getElementById("side_1-matchTheme").onclick = async function() {
+        document.getElementById("side_1-theme").disabled = document.getElementById("side_1-matchTheme").checked
+    }
+    
+    document.getElementById("side_2-matchTheme").onclick = async function() {
+        document.getElementById("side_2-theme").disabled = document.getElementById("side_2-matchTheme").checked
+    }
 }
 
 function changeScore(side, value) {
@@ -457,6 +505,10 @@ function updateData() {
         "team_2" : docDataTemp['gameScreen']['sideTwoName'].S,
         "team_1s" : docDataTemp['gameScreen']['sideOneScore'].N,
         "team_2s" : docDataTemp['gameScreen']['sideTwoScore'].N,
+        "team_1_theme" : docDataTemp['gameScreen']['sideOneTheme'].S,
+        "team_2_theme" : docDataTemp['gameScreen']['sideTwoTheme'].S,
+        "team_1_match-theme" : docDataTemp['gameScreen']['sideOneMatchTheme'].BOOL,
+        "team_2_match-theme" : docDataTemp['gameScreen']['sideTwoMatchTheme'].BOOL,
         "team_1_tos" : docDataTemp['gameScreen']['sideOneTimeouts'].N,
         "team_2_tos" : docDataTemp['gameScreen']['sideTwoTimeouts'].N,
         "team_1_fouls" : docDataTemp['gameScreen']['sideOneFouls'].N,
@@ -593,6 +645,14 @@ function updateData() {
 
     document.getElementById("side_1-score").value = docData["team_1s"];
     document.getElementById("side_2-score").value = docData["team_2s"];
+
+    document.getElementById("side_1-theme").value = docData["team_1_theme"];
+    document.getElementById("side_2-theme").value = docData["team_2_theme"];
+    document.getElementById("side_1-matchTheme").checked = docData["team_1_match-theme"];
+    document.getElementById("side_2-matchTheme").checked = docData["team_2_match-theme"];
+
+    document.getElementById("side_1-theme").disabled = docData["team_1_match-theme"]
+    document.getElementById("side_2-theme").disabled = docData["team_2_match-theme"]
 
     document.getElementById("side_1-fouls").value = docData["team_1_fouls"];
     document.getElementById("side_1-timeouts").value = docData["team_1_tos"];
