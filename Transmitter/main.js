@@ -10,6 +10,7 @@ var schools = [];
 var dynamodb;
 var dynamoClient;
 var tableName;
+var intervalId;
 
 
 window.addEventListener('message', event => {
@@ -449,6 +450,18 @@ function initButtons() {
         document.getElementById("side_2-fouls").value = 0
         document.getElementById("side_2-timeouts").value = 0
     }
+
+    document.getElementById("slaveModeEnabled").onclick = async function() {
+        if (document.getElementById("slaveModeEnabled").checked) {
+            document.getElementById('blurrableElement').classList.add("blur");
+            intervalId = setInterval(function() {document.getElementById('colorDiv').innerHTML = ""; fetchData()}, 500);
+        } else {
+            if (intervalId) {
+                clearInterval(intervalId)
+            }
+            document.getElementById('blurrableElement').classList.remove("blur");
+        }
+    }
 }
 
 function changeScore(side, value) {
@@ -499,7 +512,9 @@ function fetchData() {
                 document.getElementById('serverStatus').innerText = "Enter Database ID and Sync"
             }
         } else {
-            document.getElementById('blurrableElement').classList.remove("blur");
+            if (document.getElementById('slaveModeEmabled') == false) {
+                document.getElementById('blurrableElement').classList.remove("blur");
+            }
             document.getElementById('serverStatus').style.color = "green"
             document.getElementById('serverStatus').innerText = "Connected to " + tableName
             docDataTempTemp = data.Items;
@@ -514,7 +529,9 @@ function fetchData() {
 }
 
 function updateData() {
-    document.getElementById("blurrableElement").classList.remove("blur");
+    if (document.getElementById('slaveModeEnabled') == false) {
+        document.getElementById("blurrableElement").classList.remove("blur");
+    }
 
     docData = {
         "team_1" : docDataTemp['gameScreen']['sideOneName'].S,
