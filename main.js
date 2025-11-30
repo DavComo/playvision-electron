@@ -202,7 +202,7 @@ function createWindow() {
             });
         }},
         {type: 'separator'},
-        {role: 'toggleDevTools'}
+        {role: 'quit'}
         ]
     },
     {
@@ -347,6 +347,7 @@ function createWindow() {
 
     win.on('closed', () => {
         win = null;
+        app.exit()
     });
 }
 
