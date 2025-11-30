@@ -15,7 +15,12 @@ window.saveValue = async function (value, key, element) {
 }
 
 window.saveLicenseKey = async function () {
-    var oldKey = (await window.fileAPI.loadData('.licenseKey.json')).data.licenseKey
+    var oldKey;
+    try {
+        oldKey = (await window.fileAPI.loadData('.licenseKey.json')).data.licenseKey
+    } catch (e) {
+        oldKey = ""
+    }
     key = document.getElementById("licenseKey").value
     var valid = (await validateLicenseKey(key)).valid
     if (valid && key != oldKey) {

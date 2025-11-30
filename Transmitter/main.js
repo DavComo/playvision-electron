@@ -23,9 +23,18 @@ window.addEventListener('message', event => {
 async function init(responseJson) {  
     if (responseJson == "") {
         var data = await window.fileAPI.loadData(".licenseKey.json")
+        if (data.ok == false) {
+            document.getElementById('blurrableElement').classList.add("blur");
+            window.parent.postMessage({
+                type: "show-alert",
+                message: "Enter valid license key in settings."
+            }, "*");
+            return
+        }
         const accessKeyReponse = await fetch("https://lgphy9q5lb.execute-api.eu-central-1.amazonaws.com/?licenseKey=" + data.data.licenseKey)
         responseJson = await accessKeyReponse.json()
-        if (data.ok == false || accessKeyReponse.status != 200) {
+        if (accessKeyReponse.status != 200) {
+            document.getElementById('blurrableElement').classList.add("blur");
             window.parent.postMessage({
                 type: "show-alert",
                 message: "Enter valid license key in settings."
@@ -512,7 +521,7 @@ function fetchData() {
                 document.getElementById('serverStatus').innerText = "Enter Database ID and Sync"
             }
         } else {
-            if (document.getElementById('slaveModeEmabled') == false) {
+            if (document.getElementById('slaveModeEnabled').checked == false) {
                 document.getElementById('blurrableElement').classList.remove("blur");
             }
             document.getElementById('serverStatus').style.color = "green"
