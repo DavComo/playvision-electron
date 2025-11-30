@@ -247,6 +247,10 @@ function initButtons() {
 
         var epochTimeInMs = date.getTime();
 
+        var theme_school = document.getElementById("theme_color_school").value
+        var theme_order = document.getElementById("theme_color_order").value
+        var combined_theme = `${theme_school}_${theme_order}`
+
         var params = {
             TableName: tableName,
             Key: {
@@ -258,7 +262,7 @@ function initButtons() {
                 ":s": document.getElementById("eventSubtitle").value,
                 ":t": document.getElementById("nextEvent").value,
                 ":u": epochTimeInMs.toString(),
-                ":v": document.getElementById("themeSchool").value
+                ":v": combined_theme
             },
             ReturnValues: "UPDATED_NEW"
           };
@@ -649,7 +653,9 @@ function updateData() {
 
     var timeString = hours + ':' + minutes + ':' + seconds;
     document.getElementById("startTime").value = timeString
-    document.getElementById("themeSchool").value = docData["themeSchool"];
+    var splitTheme = docData["themeSchool"].split("_")
+    document.getElementById("theme_color_school").value = splitTheme[0];
+    document.getElementById("theme_color_order").value = splitTheme[1];
 
     //Team Scores
     document.getElementById("side_1-name-scores").value = docData["team_1"];
