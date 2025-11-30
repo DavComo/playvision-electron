@@ -2,9 +2,18 @@
 <html style="width: 100%; height: 100%;">
     <head>
         <style>
+            body {
+                margin: 8px;
+                overflow: hidden;
+            }
+
             .grid-container {
                 display: grid;
                 gap: 10px;
+                transform-origin: top left;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
             }
 
             iframe {
@@ -14,8 +23,8 @@
 
             .overlay-text {
                 font-size: 300px;
-                width: 50vw;
-                height: 50vh;
+                height: 1440px; 
+                width: 2560px;
                 align-content: center;
                 text-align: center;
                 color: rgba(255, 255, 255, 0.245);
@@ -23,23 +32,52 @@
             }
 
             .preview-frame {
-                height: 50vh; 
-                width: 50vw;
+                height: 1440px; 
+                width: 2560px;
+            }
+
+            ::-webkit-scrollbar {
+                display: none;
             }
         </style>
+
+        <script>
+            function getOS() {
+                const userAgent = window.navigator.userAgent;
+                const platform =
+                    window.navigator?.userAgentData?.platform || window.navigator.platform;
+
+                return platform;
+            }
+
+            function setScale() {
+                var os = getOS();
+                var grids = document.getElementsByClassName("grid-container");
+                for (var i = 0; i < grids.length; i++) {
+                    grids[i].style.scale = Math.min(
+                        (window.innerWidth/2 - 8) / 2560,
+                        (window.innerHeight/2 - 8) / 1440
+                    );
+                }
+            }
+
+            window.onload = setScale;
+
+            window.onresize = setScale;
+        </script>
     </head>
-    <body style="background-color: black; height: 100%; width: 100%;">
-        <div class="grid-container" style="background-color: black; justify-content: center; align-items: center; position: absolute;">
-            <iframe src="http://localhost:5500/Renderer/teamScores/main.html" style="grid-row: 1; grid-column: 2" class="preview-frame"></iframe>
-            <iframe src="http://localhost:5500/Renderer/eventName/main.html" style="grid-row: 2; grid-column: 1" class="preview-frame"></iframe>
-            <iframe src="http://localhost:5500/Renderer/startingSoon/main.html" style="grid-row: 1; grid-column: 1" class="preview-frame"></iframe>
-            <iframe style="grid-row: 2; grid-column: 2" class="preview-frame"></iframe>
+    <body style="background-color: black; height: 100%; width: 100%;" id="body">
+        <div class="grid-container" style="background-color: black; justify-content: center; align-items: center; position: absolute;" id="grid1">
+            <iframe src="http://localhost:5500/Renderer/teamScores/main.html" style="grid-row: 1; grid-column: 2" class="preview-frame frame"></iframe>
+            <iframe src="http://localhost:5500/Renderer/eventName/main.html" style="grid-row: 2; grid-column: 1" class="preview-frame frame"></iframe>
+            <iframe src="http://localhost:5500/Renderer/startingSoon/main.html" style="grid-row: 1; grid-column: 1" class="preview-frame frame"></iframe>
+            <iframe style="grid-row: 2; grid-column: 2" class="preview-frame frame"></iframe>
         </div>
-        <div class="grid-container" style="background-color: transparent; justify-content: center; align-items: center; position: absolute;">
-            <b style="grid-row: 1; grid-column: 1;" class="overlay-text">Countdown</b>
-            <b style="grid-row: 1; grid-column: 2;" class="overlay-text">Scores</b>
-            <b style="grid-row: 2; grid-column: 1;" class="overlay-text">Announcement</b>
-            <b style="grid-row: 2; grid-column: 2;" class="overlay-text">EMPTY</b>
+        <div class="grid-container" style="background-color: transparent; justify-content: center; align-items: center; position: absolute;" id="grid2">
+            <b style="grid-row: 1; grid-column: 1;" class="overlay-text frame">Countdown</b>
+            <b style="grid-row: 1; grid-column: 2;" class="overlay-text frame">Scores</b>
+            <b style="grid-row: 2; grid-column: 1;" class="overlay-text frame">Announcement</b>
+            <b style="grid-row: 2; grid-column: 2;" class="overlay-text frame">EMPTY</b>
         </div>
     </body>
 </html>
