@@ -38,11 +38,13 @@ async function fetchData() {
 async function getConfig() {
     while (true) {
         try {
-            const res = await fetch('/stream-config') // same origin as your HTML
+            const res = await fetch('/stream-config')
             if (!res.ok) throw new Error('Failed to load config')
             const cfg = await res.json()
+            hideError()
             return cfg
         } catch (e) {
+            displayError("PlayVision isn't running. Start app to continue.")
             await sleep(500)
             continue;
         }
@@ -178,4 +180,16 @@ function componentToHex(c) {
 
 function rgbToHex(r, g, b) {
   return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+function displayError(message) {
+    document.getElementById("error-message").innerText = message
+    document.getElementsByClassName("error-container")[0].style.display = "flex"
+    document.getElementById("eventName_1").classList.add("blur")
+}
+
+function hideError() {
+    document.getElementById("error-message").innerText = ""
+    document.getElementsByClassName("error-container")[0].style.display = "none"
+    document.getElementById("eventName_1").classList.remove("blur") 
 }

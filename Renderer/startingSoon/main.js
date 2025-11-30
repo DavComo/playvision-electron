@@ -36,11 +36,13 @@ async function fetchData() {
 async function getConfig() {
     while (true) {
         try {
-            const res = await fetch('/stream-config') // same origin as your HTML
+            const res = await fetch('/stream-config')
             if (!res.ok) throw new Error('Failed to load config')
             const cfg = await res.json()
+            hideError()
             return cfg
         } catch (e) {
+            displayError("PlayVision isn't running. Start app to continue.")
             await sleep(500)
             continue;
         }
@@ -200,4 +202,16 @@ async function updateClocks() {
         document.getElementById('time').innerHTML = hour + ':' + minute.toString().padStart(2, '0');
         await sleep(200);
     }
+}
+
+function displayError(message) {
+    document.getElementById("error-message").innerText = message
+    document.getElementsByClassName("error-container")[0].style.display = "flex"
+    document.getElementById("main-container").classList.add("blur")
+}
+
+function hideError() {
+    document.getElementById("error-message").innerText = ""
+    document.getElementsByClassName("error-container")[0].style.display = "none"
+    document.getElementById("main-container").classList.remove("blur") 
 }

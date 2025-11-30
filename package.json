@@ -1,7 +1,7 @@
 {
 	"name": "@playvision/playvision-app",
 	"productName": "PlayVision",
-	"version": "2.1.5",
+	"version": "2.1.6",
 	"description": "PlayVision integrated stream helper",
 	"author": "David Comor",
 	"main": "main.js",
