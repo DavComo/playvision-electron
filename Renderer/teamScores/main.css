@@ -7,18 +7,21 @@ body {
 .main-container,
 .top-container,
 .bottom-container {
-    will-change: clip-path, transform;
+    will-change: clip-path, transform, height;
     transform: translateZ(0);
 }
 
 .main-container {
-    width: 1010px;
+    min-width: 1010px;
     height: auto;
+    width: auto;
     /*background-color: black;*/
     margin-top: auto;
     margin-bottom: 100px;
     display: flex;
+    flex-direction: column;
     align-content: center;
+    align-items: center;
     justify-content: center;
     flex-wrap: wrap;
     clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%);
@@ -26,7 +29,7 @@ body {
 }
 
 .center-container {
-    width: 1000px;
+    min-width: 1000px;
     height: 91px;
     background-color: white;
     clip-path: polygon(0% 0%, 2.5% 100%, 97.5% 100%, 100% 0%);
@@ -35,7 +38,7 @@ body {
 }
 
 .score-container-left {
-    width: 500px;
+    min-width: 500px;
     height: 91px;
     display: flex;
     flex-direction: row-reverse;
@@ -44,7 +47,7 @@ body {
 }
 
 .score-container-right {
-    width: 500px;
+    min-width: 500px;
     height: 91px;
     display: flex;
     position: absolute;
@@ -69,14 +72,14 @@ body {
 }
 
 .gradient-left {
-    width: 500px;
+    min-width: 500px;
     height: 91px;
     clip-path: polygon(0% 0%, 5% 100%, 100% 100%, 100% 0%); 
     background: linear-gradient(90deg, rgba(0,0,0,0.8) 5%, rgba(0,0,0,0) 70%);
 }
 
 .gradient-right {
-    width: 500px;
+    min-width: 500px;
     height: 91px;
     clip-path: polygon(0% 0%, 0% 100%, 95% 100%, 100% 0%); 
     background: linear-gradient(90deg, rgba(0,0,0,0) 30%, rgba(0,0,0,0.8) 95%);
