@@ -69,6 +69,7 @@ body {
 .school-sign {
     font-family: 'Franklin Gothic Heavy';
     font-size: 80px;
+    white-space: nowrap;
 }
 
 .gradient-left {
@@ -111,6 +112,10 @@ img {
     margin-top: auto;
     margin-bottom: -3px;
     border-top: none;
+}
+
+.top-container.hidden {
+    margin-bottom: -41px;
 }
 
 .top-colored {
