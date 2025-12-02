@@ -168,6 +168,7 @@ async function updateData() {
                     .queue(updateSpecific('team_2', 'team_2'))
                     .queue(updateSpecific('team_1s', 'team_1s'))
                     .queue(updateSpecific('team_2s', 'team_2s'))
+                    .queue(updateSizing())
                     .queue(elemShow('.main-container')).delay(500)
                     .queue(elemShow('.stopwatch-container'))
                     .queue(elemShow('.top-container')).delay(500)
@@ -264,6 +265,7 @@ async function updateData() {
             .queue(updateSpecific('team_2', 'team_2'))
             .queue(updateSpecific('team_1s', 'team_1s'))
             .queue(updateSpecific('team_2s', 'team_2s'))
+            .queue(updateSizing())
     }
 
     var timeDelta = Date.now() - deltaStart;
@@ -325,6 +327,26 @@ function updateSpecific(htmlelem, docelem) {
 		$('#' + htmlelem).text(docData[docelem]);
 		next();
 	}
+}
+
+function updateSizing() {
+    return function(next) {
+        $('.gradient-left').css('width', '');
+        $('.gradient-right').css('width', '');
+        $('#score-left').css('width', '');
+        $('#score-right').css('width', '');
+        $('.main-container').css('width', '');
+
+        var width_left = $('#score-left').width();
+        var width_right = $('#score-right').width();
+        var maxWidth = Math.max(width_left, width_right, 500);
+        $('.gradient-left').css('width', maxWidth + 'px');
+        $('.gradient-right').css('width', maxWidth + 'px');
+        $('#score-left').css('width', maxWidth + 'px');
+        $('#score-right').css('width', maxWidth + 'px');
+        $('.main-container').css('width', (maxWidth * 2 + 10) + 'px');
+        next()
+    }
 }
 
 function updateIcon(htmlelem, schoolName) {
