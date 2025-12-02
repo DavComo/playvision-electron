@@ -31,14 +31,13 @@ ipcMain.on('electron-store-set-data', (event, key, value) => {
     store.set(key, value);
 });
 
-// main.js (add below the other imports and app.whenReady)
+
 const userDataPath = app.getPath('userData')
 
 ipcMain.handle('file:save', async (event, filename, data) => {
   try {
     const filePath = path.join(userDataPath, filename)
 
-    // If you want JSON:
     const toWrite = typeof data === 'string' ? data : JSON.stringify(data, null, 2)
 
     await fs.promises.writeFile(filePath, toWrite, 'utf-8')
@@ -54,7 +53,6 @@ ipcMain.handle('file:load', async (event, filename) => {
     const filePath = path.join(userDataPath, filename)
     const content = await fs.promises.readFile(filePath, 'utf-8')
 
-    // If you know it’s JSON, parse it:
     let parsed
     try {
       parsed = JSON.parse(content)
@@ -142,7 +140,7 @@ function createWindow() {
         titleBarStyle: 'hiddenInset',
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
-            contextIsolation: true, // Required for using contextBridge
+            contextIsolation: true,
             nodeIntegration: true, 
             nodeIntegrationInSubFrames: true
         },
@@ -250,18 +248,13 @@ function createWindow() {
                         previews.focus();
                         return
                     }
-                    // Load the website
                     previews.loadURL(url.format({
                         pathname: path.join(__dirname, './previews.html'),
                         protocol: 'file:',
                         slashes: true
-                    }), {"extraHeaders" : "pragma: no-cache\n"});// Replace with your website's URL
-                
-                    // Optionally, open DevTools for debugging
-                    // win.webContents.openDevTools();
-                
-                    // Ensure the zoomFactor is set after the window is ready
-                    previews.webContents.on('did-finish-load', () => {
+                    }), {"extraHeaders" : "pragma: no-cache\n"});
+
+                        previews.webContents.on('did-finish-load', () => {
                         previewLoading.close();
                         previews.show();
                     });
@@ -337,7 +330,6 @@ function createWindow() {
         Menu.setApplicationMenu(menu)
     });
 
-    //When page is reloaded or loaded, set both OBS Control and Overlay Control checkboxes to true in the menu
     win.webContents.on('did-finish-load', () => {
         const menu = Menu.getApplicationMenu()
         menu.items[2].submenu.items[3].checked = true
@@ -476,7 +468,6 @@ app.on('activate', () => {
     }
 });
 
-// Force close the application when quitting
 app.on('quit', () => {
     if (pythonProcess) {
         pythonProcess.kill();
