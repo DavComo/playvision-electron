@@ -1503,3 +1503,27 @@ input:checked + .slider:before {
     font-size: 15px;
     color: white;
 }
+
+.new-school-button-container {
+    width: 100%;
+    padding: 1%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.new-school-button {
+    font-size: 25px;
+    width: 5%;
+    padding: 0;
+    max-height: 30px;
+    margin-left: 10px;
+}
+
+.new-school-input {
+    font-size: 15px;
+    width: 10%;
+    padding: 0;
+    max-height: 30px;
+    margin-left: 10px;
+}

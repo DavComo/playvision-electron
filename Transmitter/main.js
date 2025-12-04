@@ -865,13 +865,94 @@ async function updateData() {
             schoolDiv.appendChild(schoolName_0);
             schoolDiv.appendChild(schoolDd);
 
-            colorDiv.appendChild(schoolDiv);
+            colorDiv.insertBefore(schoolDiv, document.getElementsByClassName('new-school-button-container')[0]);
 
             var separator = document.createElement("hr");
             separator.classList.add("formRowSep");
-            colorDiv.appendChild(separator);
+            colorDiv.insertBefore(separator, document.getElementsByClassName('new-school-button-container')[0]);
+
         }
     }
+
+    var newSchoolButtonDiv = document.createElement("div")
+    newSchoolButtonDiv.classList = "new-school-button-container"
+    var newSchoolButton = document.createElement("button")
+    newSchoolButton.classList = "new-school-button button"
+    newSchoolButton.innerText = "+"
+
+    newSchoolButton.addEventListener('click', async (event) => {
+        var schoolCode = document.getElementById("new-school-name-input").value.toLowerCase()
+        if (schools.includes(schoolCode)) {
+            window.parent.postMessage({
+                type: "show-alert",
+                licenseError: false,
+                message: `School with acronym '${document.getElementById("new-school-name-input").value}' already exists.`
+            }, "*");
+            document.getElementById("new-school-name-input").value = ""
+            return;
+        }
+        
+        var params = {
+            TableName: tableName,
+            Key: {
+                "valueId": "primaryColors"
+            },
+            UpdateExpression: ("set " + schoolCode + " = :r"),
+            ExpressionAttributeValues: {
+                ":r": "#000",
+
+            },
+            ReturnValues: "UPDATED_NEW"
+        };
+            
+        dynamoClient.update(params, function(err, data) {});
+
+        var params = {
+            TableName: tableName,
+            Key: {
+                "valueId": "secondaryColors"
+            },
+            UpdateExpression: ("set " + schoolCode + " = :r"),
+            ExpressionAttributeValues: {
+                ":r": "#000",
+
+            },
+            ReturnValues: "UPDATED_NEW"
+            };
+            
+        dynamoClient.update(params, function(err, data) {});
+
+        var params = {
+            TableName: tableName,
+            Key: {
+            "valueId": "schoolIconURL"
+            },
+            UpdateExpression: (`set ${schoolCode} = :r`),
+            ExpressionAttributeValues: {
+                ":r": dynamoS3Locations[schools[0]]
+            },
+            ReturnValues: "UPDATED_NEW"
+        };
+        
+        dynamoClient.update(params, function(err, data) {
+            if (!err) {
+                document.getElementById('colorDiv').innerHTML = "";
+                fetchData();
+            }
+        });
+    });
+
+    var newSchoolNameInput = document.createElement("input")
+    newSchoolNameInput.classList = "new-school-input"
+    newSchoolNameInput.id = "new-school-name-input"
+    newSchoolNameInput.maxLength = 10;
+    var nameLabel = document.createElement('span')
+    nameLabel.innerText = "Enter New School Acronym: "
+    
+    newSchoolButtonDiv.appendChild(nameLabel)
+    newSchoolButtonDiv.appendChild(newSchoolNameInput)
+    newSchoolButtonDiv.appendChild(newSchoolButton)
+    colorDiv.appendChild(newSchoolButtonDiv)
 
     //Color Page
     for (var i = 0; i < schools.length; i++) {
