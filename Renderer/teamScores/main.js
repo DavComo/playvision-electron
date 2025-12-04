@@ -9,6 +9,7 @@ var schools = [];
 
 var dynamodb;
 var dynamoClient;
+var s3Client;
 var docDataTempTemp;
 var streamData;
 var sideOneTheme;
@@ -59,6 +60,8 @@ async function init() {
 
     dynamodb = new AWS.DynamoDB();
     dynamoClient = new AWS.DynamoDB.DocumentClient();
+
+    s3Client = new AWS.S3();
 
     var params = {
         TableName: streamData.dbName,
@@ -134,7 +137,9 @@ async function updateData() {
         "startedAt" : docDataTemp['gameScreen']['stopwatchStartedAt'].N,
         "countingDown" : docDataTemp['gameScreen']['countingDown'].BOOL,
         "showStopwatch" : docDataTemp['gameScreen']['showStopwatch'].BOOL,
-        "periodMark" : docDataTemp['gameScreen']['periodMark'].S
+        "periodMark" : docDataTemp['gameScreen']['periodMark'].S,
+        "s3Locations" : docDataTemp['schoolIconURL'],
+        "s3LocationsHTTPS" : []
     }
 
     for (var i = 0; i < Object.keys(docDataTemp['primaryColors']).length; i++) {
@@ -146,10 +151,15 @@ async function updateData() {
         }
     }
 
+    for (var i = 0; i < Object.keys(docData['s3Locations']).length; i++) {
+        var key = Object.keys(docData['s3Locations'])[i]
+        docData['s3LocationsHTTPS'][key] = encodeURI(s3URItoURL(docData['s3Locations'][key].S))
+    }
+
     updateStopwatch(docData);
 
     if (docData['hide_1'] == false) {
-        if ($('#team_1').text() != docData['team_1'] || $('#team_2').text() != docData['team_2'] || sideOneTheme != docData['team_1_theme'] || sideTwoTheme != docData['team_2_theme']) {
+        if ($('#team_1').text() != docData['team_1'] || $('#team_2').text() != docData['team_2'] || sideOneTheme != docData['team_1_theme'] || sideTwoTheme != docData['team_2_theme'] || document.getElementById('team_1_icon').src != docData['s3LocationsHTTPS'][sideOneTheme.toLowerCase()] || document.getElementById('team_2_icon').src != docData['s3LocationsHTTPS'][sideTwoTheme.toLowerCase()]) {
             minTimeout += 3000;
             await new Promise(resolve => { 
                 sideOneTheme = docData['team_1_theme']
@@ -350,10 +360,21 @@ function updateSizing() {
 }
 
 function updateIcon(htmlelem, schoolName) {
-    return function(next) {
-        $('#' + htmlelem).attr('src', '/Images/SchoolIcons/' + schoolName + '_Logo-200x200.png');
+    return async function(next) {
+        $('#' + htmlelem).attr('src', docData['s3LocationsHTTPS'][schoolName.toLowerCase()]);
         next();
     }
+}
+
+function s3URItoURL(url) {
+    var bucketName = url.split('/')[2]
+    var separatedUrl = url.split('/').splice(3)
+
+    var joinedPrefix = separatedUrl.join("/")
+
+    var newUrl = `https://${bucketName}.s3.eu-central-1.amazonaws.com/${joinedPrefix}`
+
+    return newUrl;
 }
 
 function updateColors() {

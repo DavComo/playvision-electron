@@ -279,18 +279,16 @@ body {
     background: #fff;
     border-width: 1px;
     border-style: solid;
-    border-top-color: #eee;
-    border-right-color: #dfdfdf;
-    border-bottom-color: #d2d2d2;
-    border-left-color: #dfdfdf;
     box-shadow: 2px 2px 2px rgba(0, 0, 0, .04);
-    border-radius: 4px
+    border-radius: 5px
 }
 
 .block-body {
     list-style: none;
     margin: 0;
-    padding: 0
+    padding: 0;
+    border-radius: inherit;
+    border-radius: 4px
 }
 
 @media (max-width:650px) {
@@ -324,6 +322,12 @@ body {
     color: #fff;
     background: #2382c8;
     border-color: #2b90da #1f74b2 #1f74b2 #2b90da
+}
+
+.button:disabled {
+    background: #989898;
+    border-color: #989898 #989898 #989898 #989898;
+    cursor: not-allowed;
 }
 
 .button.button--primary {
@@ -1467,4 +1471,35 @@ input:checked + .slider:before {
 
 .slider.round:before {
   border-radius: 50%;
+}
+
+.image-picker {
+    width: 20%;
+    margin-left: 1%;
+}
+
+.image-display {
+    margin-left: 5%;
+    width: 5%;
+}
+
+.upload-button {
+    margin-left: 1%;
+}
+
+.file-upload-container {
+    background-color: #1a1a1a;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    border-left-color: #1a1a1a;
+    border-right-color: #1a1a1a;
+    border-top-color: #1a1a1a;
+}
+
+#file-upload {
+    margin: 10px;
+    height: 40px;
+    font-size: 15px;
+    color: white;
 }

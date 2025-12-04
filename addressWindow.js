@@ -58,7 +58,8 @@ const validateLicenseKey = async function (key) {
             dbName: `${responseJson.defaultStream}`,
             accessKey: `${responseJson.accessKey}`,
             secretKey: `${responseJson.secretKey}`,
-            awsRegion: "eu-central-1"
+            awsRegion: "eu-central-1",
+            s3BaseLocation: `${responseJson.s3BaseLocation}`
         }
 
         data = await window.fileAPI.loadData(".streamData.json")

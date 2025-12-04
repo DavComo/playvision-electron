@@ -1,5 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 const OBSWebSocket = require('obs-websocket-js').default;
+const fs = require('fs');
 
 // Expose a secure API to the renderer process
 contextBridge.exposeInMainWorld('electronAPI', {
@@ -24,6 +25,8 @@ contextBridge.exposeInMainWorld('myStore', {
 contextBridge.exposeInMainWorld('fileAPI', {
   saveData: (filename, data) => ipcRenderer.invoke('file:save', filename, data),
   loadData: (filename) => ipcRenderer.invoke('file:load', filename),
+  selectFile: () => ipcRenderer.invoke("select-file"),
+  readFile: (filePath) => fs.promises.readFile(filePath)
 });
 
 contextBridge.exposeInMainWorld('ipc', {

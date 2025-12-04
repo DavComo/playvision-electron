@@ -67,6 +67,16 @@ ipcMain.handle('file:load', async (event, filename) => {
   }
 })
 
+ipcMain.handle('select-file', async () => {
+  const result = await dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [{ name: 'Images', extensions: ['png', 'jpg', 'jpeg'] }]
+  });
+
+  if (result.canceled) return null;
+  return result.filePaths[0]; // send file path back to renderer
+});
+
 ipcMain.on('valid-license-key', (event, data) => {
     for (const win of BrowserWindow.getAllWindows()) {
         win.webContents.send('license-key-validified', data);
@@ -200,6 +210,7 @@ function createWindow() {
             });
         }},
         {type: 'separator'},
+        {role: 'toggleDevTools'},
         {role: 'quit'}
         ]
     },

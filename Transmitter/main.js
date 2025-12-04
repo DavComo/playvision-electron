@@ -9,8 +9,11 @@ var schools = [];
 
 var dynamodb;
 var dynamoClient;
+var s3Client;
+var s3BaseLocation;
 var tableName;
 var intervalId;
+var parsedBaseUrl;
 
 
 window.addEventListener('message', event => {
@@ -45,6 +48,9 @@ async function init(responseJson) {
 
     var inputs = document.getElementsByTagName("input")
     for (var i = 0; i < inputs.length; i++) {
+        if (inputs[i].type == "file") {
+            continue;
+        }
         inputs[i].value = "Loading..."
     };
     var data = await window.fileAPI.loadData(".streamData.json")
@@ -65,8 +71,12 @@ async function init(responseJson) {
         secretAccessKey: responseJson.secretKey
     });
 
+    s3BaseLocation = responseJson.s3BaseLocation;
+
     dynamodb = new AWS.DynamoDB();
     dynamoClient = new AWS.DynamoDB.DocumentClient();
+    s3Client = new AWS.S3();
+
 
     initButtons();
 
@@ -74,7 +84,6 @@ async function init(responseJson) {
 }
 
 
-//Module functions
 
 function initButtons() {
     function initNavBar() {
@@ -158,6 +167,29 @@ function initButtons() {
               
             dynamoClient.update(params, function(err, data) {});
         });
+
+        var schoolImageDivs = document.getElementsByClassName('schoolDd')
+
+        var newIconMatchings = {};
+        for (var s = 0; s < schoolImageDivs.length; s++) {
+            var div = schoolImageDivs[s]
+            var divSchoolCode = div.id
+            var selectedImage = div.getElementsByClassName('image-picker')[0].value
+
+            var params = {
+                TableName: tableName,
+                Key: {
+                "valueId": "schoolIconURL"
+                },
+                UpdateExpression: (`set ${divSchoolCode} = :r`),
+                ExpressionAttributeValues: {
+                    ":r": selectedImage
+                },
+                ReturnValues: "UPDATED_NEW"
+            };
+            
+            dynamoClient.update(params, function(err, data) {});
+        }
 
         var params = {
             TableName: tableName,
@@ -471,6 +503,53 @@ function initButtons() {
             document.getElementById('blurrableElement').classList.remove("blur");
         }
     }
+
+    document.getElementById('file-upload').addEventListener('change', () => {
+        document.getElementById('upload-file-button').disabled = false;
+    });
+
+    document.getElementById('upload-file-button').addEventListener('click', async (event) => {
+        var file = document.getElementById('file-upload').files[0];
+        var fileName = file.name;
+        var fileType = file.type;
+        var fileBuffer = await file.arrayBuffer();
+        event.target.disabled = true;
+        event.target.innerText = "Uploading..."
+        var file = document.getElementById('file-upload').disabled = true;
+        
+        s3Client.putObject({
+            Bucket: parsedBaseUrl.bucket,
+            Key: parsedBaseUrl.key + fileName,
+            Body: fileBuffer,
+            ContentType: fileType
+        }, async (err, data) => {
+            if (err) {
+                console.error(err)
+            } else {
+                console.log('Uploaded successfully!', data);
+                event.target.innerText = "Upload Successful!"
+                event.target.style.backgroundColor = "green"
+                event.target.style.borderColor = "green"
+                document.getElementById('file-upload').value = "";
+                document.getElementById('file-upload').disabled = false;
+                
+                var imagePickers = document.getElementsByClassName('image-picker')
+
+                for (var p = 0; p < imagePickers.length; p++) {
+                    var showKey = fileName
+                    var option = document.createElement('option')
+                    option.value = `s3://${parsedBaseUrl.bucket}/${parsedBaseUrl.key + fileName}`
+                    option.innerHTML = showKey
+                    imagePickers[p].appendChild(option)
+                }
+
+                await sleep(1000)
+                event.target.innerText = "Upload Image"
+                event.target.style.backgroundColor = ""
+                event.target.style.borderColor = ""
+            }
+        });
+    });
 }
 
 function changeScore(side, value) {
@@ -496,11 +575,12 @@ function changeScore(side, value) {
 }
 
 
-var dynamodb;
 var docDataTempTemp;
 var docDataTemp = {};
 var colors = {};
-var docData = {}
+var dynamoS3Locations = {};
+var s3AllObjects = {};
+var docData = {};
 
 function fetchData() {
     tableName = document.getElementById("serverName").value;
@@ -537,7 +617,10 @@ function fetchData() {
     });
 }
 
-function updateData() {
+async function updateData() {
+    dynamoS3Locations = {};
+    s3AllObjects = {};
+
     if (document.getElementById('slaveModeEnabled') == false) {
         document.getElementById("blurrableElement").classList.remove("blur");
     }
@@ -577,6 +660,25 @@ function updateData() {
 
     schools = [];
 
+    parsedBaseUrl = parseS3Url(s3BaseLocation)
+
+    var unmodifiedAvailableIcons = await listObjectsInDirectory(parsedBaseUrl.bucket, parsedBaseUrl.key)
+    for (var i = 0; i < unmodifiedAvailableIcons.length; i++) {
+        if (unmodifiedAvailableIcons[i].Size <= 0) {
+            continue;
+        }
+        var separatedS3Url = unmodifiedAvailableIcons[i].Key.split('/')
+        s3AllObjects[separatedS3Url[separatedS3Url.length - 1]] = s3BaseLocation + separatedS3Url[separatedS3Url.length - 1]
+    }
+    
+    for (var i = 0; i < Object.keys(docDataTemp['primaryColors']).length; i++) {
+        var schoolCode = Object.keys(docDataTemp['primaryColors'])[i];
+        if (schoolCode == "valueId") {
+            continue;
+        }
+        dynamoS3Locations[schoolCode] = docDataTemp['schoolIconURL'][schoolCode].S;
+    }
+
     for (var i = 0; i < Object.keys(docDataTemp['primaryColors']).length; i++) {
         var schoolCode = Object.keys(docDataTemp['primaryColors'])[i];
         var colorDiv = document.getElementById("colorDiv");
@@ -598,11 +700,17 @@ function updateData() {
             schoolName_0.appendChild(schoolName_1);
 
             var schoolDd = document.createElement("dd");
+            schoolDd.style['display'] = "flex";
+            schoolDd.style['align-items'] = "center";
+            schoolDd.classList = "schoolDd"
+            schoolDd.id = schoolCode
+
             var primaryDiv = document.createElement("div");
             primaryDiv.classList.add("inputGroup", "inputGroup--joined");
             var spanDiv = document.createElement("span");
             spanDiv.classList.add("inputGroup-text");
             spanDiv.innerText = "Primary";
+            spanDiv.style['width'] = '100px';
             var inputDiv = document.createElement("input");
             inputDiv.type = "text";
             inputDiv.classList.add("input", "texts", "t1");
@@ -622,6 +730,7 @@ function updateData() {
             secondaryspanDiv.innerText = "Secondary";
             var secondaryinputDiv = document.createElement("input");
             secondaryinputDiv.type = "text";
+            secondaryspanDiv.style['width'] = '100px';
             secondaryinputDiv.classList.add("input", "texts", "t1");
             secondaryinputDiv.id = schoolCode + "Secondary";
             var secondaryexampleDiv = document.createElement("div");
@@ -632,8 +741,112 @@ function updateData() {
             secondaryDiv.appendChild(secondaryinputDiv);
             secondaryDiv.appendChild(secondaryexampleDiv);
 
-            schoolDd.appendChild(primaryDiv);
-            schoolDd.appendChild(secondaryDiv);
+            var surroundingDiv = document.createElement("div")
+            surroundingDiv.style['flex-direction'] = "column"
+            surroundingDiv.style['display'] = "flex"
+            surroundingDiv.style['gap'] = "10px"
+            surroundingDiv.style['width'] = "100%"
+            surroundingDiv.appendChild(primaryDiv)
+            surroundingDiv.appendChild(secondaryDiv)
+
+            var imageDisplay = document.createElement('img')
+            imageDisplay.classList = 'image-display'
+            var imageBuffer = await getObjectFromS3Url(dynamoS3Locations[schoolCode])
+            const base64 = imageBuffer.toString('base64');
+            const mimeType = "image/png"; // or detect dynamically
+            const dataUrl = `data:${mimeType};base64,${base64}`;
+            imageDisplay.src = `${dataUrl}`
+
+
+            var imagePicker = document.createElement('select')
+            imagePicker.id = schoolCode + '-icon_picker'
+
+            for (var a = 0; a < Object.keys(s3AllObjects).length; a++) {
+                var showKey = Object.keys(s3AllObjects)[a]
+                var option = document.createElement('option')
+                option.value = s3AllObjects[showKey]
+                option.innerHTML = showKey
+                imagePicker.appendChild(option)
+            }
+
+            imagePicker.classList = "input texts t1 image-picker"
+            imagePicker.value = dynamoS3Locations[schoolCode]
+
+            imagePicker.addEventListener('change', async (event) => {
+                var selector = event.target
+                var parentElement = selector.parentElement
+
+                var imageDisplay = document.createElement('img')
+                imageDisplay.classList = 'image-display'
+                var imageBuffer = await getObjectFromS3Url(selector.value)
+                const base64 = imageBuffer.toString('base64');
+                const mimeType = "image/png"; 
+                const dataUrl = `data:${mimeType};base64,${base64}`;
+                parentElement.getElementsByClassName('image-display')[0].src = `${dataUrl}`
+            });
+
+            var deleteIconButton = document.createElement('button');
+            deleteIconButton.classList = "button";
+            deleteIconButton.style['margin-left'] = '10px';
+            deleteIconButton.innerText = "Delete Image";
+
+            deleteIconButton.addEventListener('click', async (event) => {
+                var parentDiv = event.target.parentElement
+                var schoolCode = parentDiv.id
+
+                var selector = parentDiv.getElementsByTagName('select')[0]
+                var parsedUrl = parseS3Url(selector.value)
+                var affixedS3url = selector.value
+
+                await s3Client.deleteObject({
+                    Bucket: parsedBaseUrl.bucket,
+                    Key: parsedUrl.key
+                }).promise();
+
+
+                var allSelectsWithThisImage = [...document.querySelectorAll("select")]
+                    .filter(sel => sel.value === affixedS3url);
+
+                var allIconSelectors = document.getElementsByClassName('image-picker')
+                for (var a = 0; a < allIconSelectors.length; a++) {
+                    var specificSelect = allIconSelectors[a]
+                    const option = specificSelect.querySelector(`option[value="${affixedS3url}"]`);
+                    if (option) option.remove();
+                }
+                for (var a = 0; a < allSelectsWithThisImage.length; a++) {
+                    selector = allSelectsWithThisImage[a]
+                    selector.value = selector.children[0].value
+
+                    var parentElement = selector.parentElement
+
+                    var imageDisplay = document.createElement('img')
+                    imageDisplay.classList = 'image-display'
+                    var imageBuffer = await getObjectFromS3Url(selector.value)
+                    const base64 = imageBuffer.toString('base64');
+                    const mimeType = "image/png"; 
+                    const dataUrl = `data:${mimeType};base64,${base64}`;
+                    parentElement.getElementsByClassName('image-display')[0].src = `${dataUrl}`
+
+                    var params = {
+                        TableName: tableName,
+                        Key: {
+                        "valueId": "schoolIconURL"
+                        },
+                        UpdateExpression: (`set ${parentElement.id} = :r`),
+                        ExpressionAttributeValues: {
+                            ":r": selector.value
+                        },
+                        ReturnValues: "UPDATED_NEW"
+                    };
+                    
+                    dynamoClient.update(params, function(err, data) {});
+                }
+            });
+            
+            schoolDd.appendChild(surroundingDiv);
+            schoolDd.appendChild(imageDisplay)
+            schoolDd.appendChild(imagePicker)
+            schoolDd.appendChild(deleteIconButton)
 
             schoolDiv.appendChild(schoolName_0);
             schoolDiv.appendChild(schoolDd);
@@ -929,4 +1142,62 @@ function timeStringToMs(timeString) {
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function parseS3Url(s3Url) {
+  const match = s3Url.match(/^s3:\/\/([^\/]+)\/(.+)$/);
+  if (!match) throw new Error("Invalid S3 URL");
+  return { bucket: match[1], key: match[2] };
+}
+
+async function getObjectFromS3Url(s3Url) {
+  const { bucket, key } = parseS3Url(s3Url);
+
+  const result = await s3Client.getObject({
+    Bucket: bucket,
+    Key: key
+  }).promise();
+
+  return result.Body;
+};
+
+async function setBaseUrl(s3Url) {
+    var initialSplit = s3Url.match(/^s3:\/\/([^\/]+)\/(.+)$/);
+    var uriSplit = initialSplit[2].split('/')
+    var string = `s3://${initialSplit[1]}/${uriSplit[0]}`
+    
+    baseUrl = string
+}
+
+async function listObjectsInDirectory(bucket, directory) {
+  const prefix = directory.endsWith("/") ? directory : directory + "/";
+
+  const params = {
+    Bucket: bucket,
+    Prefix: prefix,
+  };
+
+  const result = await s3Client.listObjectsV2(params).promise();
+  return result.Contents; // array of objects
+}
+
+async function uploadFileToS3(filePath, bucketName, key) {
+  const fileContent = fs.readFileSync(filePath);
+
+  const params = {
+    Bucket: bucketName,
+    Key: key,           
+    Body: fileContent,
+    ACL: 'public-read',
+    ContentType: 'image/png'
+  };
+
+  try {
+    const result = await s3.upload(params).promise();
+    console.log('Upload successful:', result.Location);
+    return result.Location;
+  } catch (err) {
+    console.error('Upload failed:', err);
+    throw err;
+  }
 }
