@@ -84,36 +84,38 @@ ipcMain.on('valid-license-key', (event, data) => {
 });
 
 ipcMain.handle("show-alert", async (event, options) => {
-    if (settingsOpened) {
-        addressWindow.focus()
-        return;
-    } else {
-        settingsOpened = true;
+    if (options.licenseError) {
+        if (settingsOpened) {
+            addressWindow.focus()
+            return;
+        } else {
+            settingsOpened = true;
+        }
+        addressWindow = new BrowserWindow({
+            width: 750,
+            height: 500,
+            webPreferences: {
+                preload: path.join(__dirname, 'preload.js'),
+                nodeIntegration: true
+            },
+            show: false,
+            title: "PlayVision - Overlay Addresses"
+        }); 
+        addressWindow.loadURL(url.format({
+            pathname: path.join(__dirname, './addressWindow.html'),
+            protocol: 'file:',
+            slashes: true
+        }), {"extraHeaders" : "pragma: no-cache\n"});
+
+
+        addressWindow.once('ready-to-show', () => {
+            addressWindow.show();
+            addressWindow.setAlwaysOnTop(true)
+        });
+        addressWindow.on('closed', () => {
+            settingsOpened = false;
+        });
     }
-    addressWindow = new BrowserWindow({
-        width: 750,
-        height: 500,
-        webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
-            nodeIntegration: true
-        },
-        show: false,
-        title: "PlayVision - Overlay Addresses"
-    }); 
-    addressWindow.loadURL(url.format({
-        pathname: path.join(__dirname, './addressWindow.html'),
-        protocol: 'file:',
-        slashes: true
-    }), {"extraHeaders" : "pragma: no-cache\n"});
-
-
-    addressWindow.once('ready-to-show', () => {
-        addressWindow.show();
-        addressWindow.setAlwaysOnTop(true)
-    });
-    addressWindow.on('closed', () => {
-        settingsOpened = false;
-    });
 
     return dialog.showMessageBox({
         type: options.type || "info",

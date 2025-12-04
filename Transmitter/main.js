@@ -30,6 +30,7 @@ async function init(responseJson) {
             document.getElementById('blurrableElement').classList.add("blur");
             window.parent.postMessage({
                 type: "show-alert",
+                licenseError: true,
                 message: "Enter valid license key in settings."
             }, "*");
             return
@@ -504,8 +505,23 @@ function initButtons() {
         }
     }
 
-    document.getElementById('file-upload').addEventListener('change', () => {
-        document.getElementById('upload-file-button').disabled = false;
+    document.getElementById('file-upload').addEventListener('change', (event) => {
+        if (event.target.files.length == 0 ) {
+            document.getElementById('upload-file-button').disabled = true;
+            return;
+        }
+        var size = event.target.files[0].size
+        if (size > 200000) {
+            window.parent.postMessage({
+                type: "show-alert",
+                licenseError: false,
+                message: "File size too big. Limit sizes to 200 kB. Recommended icon resolution is 200x200 pixels"
+            }, "*");
+            event.target.value = "";
+            document.getElementById('upload-file-button').disabled = true;
+        } else {
+            document.getElementById('upload-file-button').disabled = false;
+        };
     });
 
     document.getElementById('upload-file-button').addEventListener('click', async (event) => {
@@ -620,10 +636,6 @@ function fetchData() {
 async function updateData() {
     dynamoS3Locations = {};
     s3AllObjects = {};
-
-    if (document.getElementById('slaveModeEnabled') == false) {
-        document.getElementById("blurrableElement").classList.remove("blur");
-    }
 
     docData = {
         "team_1" : docDataTemp['gameScreen']['sideOneName'].S,
@@ -775,6 +787,8 @@ async function updateData() {
             imagePicker.addEventListener('change', async (event) => {
                 var selector = event.target
                 var parentElement = selector.parentElement
+
+
 
                 var imageDisplay = document.createElement('img')
                 imageDisplay.classList = 'image-display'
@@ -932,6 +946,10 @@ async function updateData() {
     document.getElementById("countingDown").checked = docData["countingDown"];
 
     initStopwatch();
+
+    if (document.getElementById('slaveModeEnabled') == false) {
+        document.getElementById("blurrableElement").classList.remove("blur");
+    }
 }
 
 var countingDown; /* If true, count the stopwatch down, if false, count up */

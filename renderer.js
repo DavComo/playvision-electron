@@ -26,7 +26,8 @@ window.ipc.on('license-key-validified', data => {
 window.addEventListener("message", async (event) => {
   if (event.data.type === "show-alert") {
     window.ipc.invoke("show-alert", {
-      message: event.data.message
+      message: event.data.message,
+      licenseError: event.data.licenseError
     });
   }
 });
