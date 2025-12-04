@@ -138,6 +138,12 @@ function initButtons() {
 
         //Save Color Page
         schools.forEach(school => {
+            if (isValidHex(document.getElementById(school + "Primary").value) == false) {
+                document.getElementById(school + "Primary").value = colors[school + "_primary"]
+            }
+            if (isValidHex(document.getElementById(school + "Secondary").value) == false) {
+                document.getElementById(school + "Secondary").value = colors[school + "_secondary"]
+            }
             var params = {
                 TableName: tableName,
                 Key: {
@@ -167,9 +173,17 @@ function initButtons() {
               };
               
             dynamoClient.update(params, function(err, data) {});
+
+            colors[school + "_primary"] = document.getElementById(school + "Primary").value;
+            colors[school + "_secondary"] = document.getElementById(school + "Secondary").value;
         });
 
         var schoolImageDivs = document.getElementsByClassName('schoolDd')
+
+        var colorInputs = document.getElementsByClassName('color-input')
+        Array.from(colorInputs).forEach((colorInput) => {
+            colorInput.parentElement.getElementsByClassName('color-picker')[0].style['background-color'] = colorInput.value
+        });
 
         var newIconMatchings = {};
         for (var s = 0; s < schoolImageDivs.length; s++) {
@@ -215,9 +229,9 @@ function initButtons() {
             sideOneTheme = document.getElementById("side_1-name-scores").value
             var opts = document.getElementById("side_1-theme").options
             const vals = Array.from(opts)
-                .map(el => el.value); 
-            if (vals.includes(sideOneTheme)) {
-                document.getElementById("side_1-theme").value = sideOneTheme
+                .map(el => el.value.toLowerCase()); 
+            if (vals.includes(sideOneTheme.toLowerCase())) {
+                document.getElementById("side_1-theme").value = sideOneTheme.toUpperCase()
             } else {
                 sideOneTheme = document.getElementById("side_1-theme").value
                 document.getElementById("side_1-matchTheme").checked = false
@@ -230,9 +244,9 @@ function initButtons() {
             sideTwoTheme = document.getElementById("side_2-name-scores").value
             var opts = document.getElementById("side_2-theme").options
             const vals = Array.from(opts)
-                .map(el => el.value); 
-            if (vals.includes(sideTwoTheme)) {
-                document.getElementById("side_2-theme").value = sideTwoTheme
+                .map(el => el.value.toLowerCase()); 
+            if (vals.includes(sideTwoTheme.toLowerCase())) {
+                document.getElementById("side_2-theme").value = sideTwoTheme.toUpperCase()
             } else {
                 sideTwoTheme = document.getElementById("side_2-theme").value
                 document.getElementById("side_2-matchTheme").checked = false
@@ -725,7 +739,7 @@ async function updateData() {
             spanDiv.style['width'] = '100px';
             var inputDiv = document.createElement("input");
             inputDiv.type = "text";
-            inputDiv.classList.add("input", "texts", "t1");
+            inputDiv.classList.add("input", "texts", "t1", "color-input");
             inputDiv.id = schoolCode + "Primary";
             var exampleDiv = document.createElement("div");
             exampleDiv.classList.add("color-picker");
@@ -743,7 +757,7 @@ async function updateData() {
             var secondaryinputDiv = document.createElement("input");
             secondaryinputDiv.type = "text";
             secondaryspanDiv.style['width'] = '100px';
-            secondaryinputDiv.classList.add("input", "texts", "t1");
+            secondaryinputDiv.classList.add("input", "texts", "t1", "color-input");
             secondaryinputDiv.id = schoolCode + "Secondary";
             var secondaryexampleDiv = document.createElement("div");
             secondaryexampleDiv.classList.add("color-picker");
@@ -856,11 +870,271 @@ async function updateData() {
                     dynamoClient.update(params, function(err, data) {});
                 }
             });
+
+            var deleteSchoolButton = document.createElement('button');
+            deleteSchoolButton.classList = "button";
+            deleteSchoolButton.style['margin-left'] = '10px';
+            deleteSchoolButton.innerText = "Delete School";
+            deleteSchoolButton.style['background-color'] = "#27597dff"
+
+            deleteSchoolButton.addEventListener('click', async (event) => {
+                var schoolCode = event.target.parentElement.id
+
+                var params = {
+                    TableName: tableName,
+                    Key: {
+                        valueId: "primaryColors"
+                    },
+                    UpdateExpression: `REMOVE #a`,
+                    ExpressionAttributeNames: {
+                        "#a": schoolCode
+                    }
+                };
+
+                await dynamoClient.update(params).promise();
+
+                params = {
+                    TableName: tableName,
+                    Key: {
+                        valueId: "secondaryColors"
+                    },
+                    UpdateExpression: `REMOVE #a`,
+                    ExpressionAttributeNames: {
+                        "#a": schoolCode
+                    }
+                };
+
+                await dynamoClient.update(params).promise();
+
+                params = {
+                    TableName: tableName,
+                    Key: {
+                        valueId: "schoolIconURL"
+                    },
+                    UpdateExpression: `REMOVE #a`,
+                    ExpressionAttributeNames: {
+                        "#a": schoolCode
+                    }
+                };
+
+                await dynamoClient.update(params).promise();
+            
+
+                var themeOptions = document.querySelectorAll(`option[value=${schoolCode.toUpperCase()}]`)
+                themeOptions.forEach((theme) => {
+                    theme.remove()
+                })
+
+                document.getElementById('theme_color_school').value = document.getElementById('theme_color_school').options[0].value
+
+                event.target.parentElement.parentElement.remove()
+
+                document.getElementById("saveValues").innerText = "Save Successful"
+                document.getElementById("saveValues").style.backgroundColor = "green"
+                var choiceIds = ["eventScene"];
+                var toggleIds = ["showEvent"];
+
+                const index = schools.indexOf(schoolCode);
+                if (index > -1) {
+                    schools.splice(index, 1);
+                }
+
+
+                //Save Color Page
+                schools.forEach(school => {
+                    var params = {
+                        TableName: tableName,
+                        Key: {
+                        "valueId": "primaryColors"
+                        },
+                        UpdateExpression: ("set " + school + " = :r"),
+                        ExpressionAttributeValues: {
+                            ":r": document.getElementById(school + "Primary").value,
+
+                        },
+                        ReturnValues: "UPDATED_NEW"
+                    };
+                    
+                    dynamoClient.update(params, function(err, data) {});
+
+                    var params = {
+                        TableName: tableName,
+                        Key: {
+                        "valueId": "secondaryColors"
+                        },
+                        UpdateExpression: ("set " + school + " = :r"),
+                        ExpressionAttributeValues: {
+                            ":r": document.getElementById(school + "Secondary").value,
+
+                        },
+                        ReturnValues: "UPDATED_NEW"
+                    };
+                    
+                    dynamoClient.update(params, function(err, data) {});
+                });
+
+                var colorInputs = document.getElementsByClassName('color-input')
+                Array.from(colorInputs).forEach((colorInput) => {
+                    colorInput.parentElement.getElementsByClassName('color-picker')[0].style['background-color'] = colorInput.value
+                });
+
+                var schoolImageDivs = document.getElementsByClassName('schoolDd')
+
+                var newIconMatchings = {};
+                for (var s = 0; s < schoolImageDivs.length; s++) {
+                    var div = schoolImageDivs[s]
+                    var divSchoolCode = div.id
+                    var selectedImage = div.getElementsByClassName('image-picker')[0].value
+
+                    var params = {
+                        TableName: tableName,
+                        Key: {
+                        "valueId": "schoolIconURL"
+                        },
+                        UpdateExpression: (`set ${divSchoolCode} = :r`),
+                        ExpressionAttributeValues: {
+                            ":r": selectedImage
+                        },
+                        ReturnValues: "UPDATED_NEW"
+                    };
+                    
+                    dynamoClient.update(params, function(err, data) {});
+                }
+
+                var params = {
+                    TableName: tableName,
+                    Key: {
+                    "valueId": "eventClassifier"
+                    },
+                    UpdateExpression: ("set eventName = :r, eventScene = :s, showEvent = :t"),
+                    ExpressionAttributeValues: {
+                        ":r": document.getElementById("eventNameIs").value,
+                        ":s": document.getElementById("eventScene").value,
+                        ":t": document.getElementById("showEvent").checked
+                    },
+                    ReturnValues: "UPDATED_NEW"
+                };
+                
+                dynamoClient.update(params, function(err, data) {});
+
+                var sideOneTheme;
+                var sideTwoTheme;
+
+                if (document.getElementById("side_1-matchTheme").checked) {
+                    sideOneTheme = document.getElementById("side_1-name-scores").value
+                    var opts = document.getElementById("side_1-theme").options
+                    const vals = Array.from(opts)
+                        .map(el => el.value.toLowerCase()); 
+                    if (vals.includes(sideOneTheme.toLowerCase())) {
+                        document.getElementById("side_1-theme").value = sideOneTheme.toUpperCase()
+                    } else {
+                        sideOneTheme = document.getElementById("side_1-theme").value
+                        document.getElementById("side_1-matchTheme").checked = false
+                        document.getElementById("side_1-theme").disabled = false
+                    }
+                } else {
+                    sideOneTheme = document.getElementById("side_1-theme").value
+                }
+                if (document.getElementById("side_2-matchTheme").checked) {
+                    sideTwoTheme = document.getElementById("side_2-name-scores").value
+                    var opts = document.getElementById("side_2-theme").options
+                    const vals = Array.from(opts)
+                        .map(el => el.value.toLowerCase()); 
+                    if (vals.includes(sideTwoTheme.toLowerCase())) {
+                        document.getElementById("side_2-theme").value = sideTwoTheme.toUpperCase()
+                    } else {
+                        sideTwoTheme = document.getElementById("side_2-theme").value
+                        document.getElementById("side_2-matchTheme").checked = false
+                        document.getElementById("side_2-theme").disabled = false
+                    }
+                } else {
+                    sideTwoTheme = document.getElementById("side_2-theme").value
+                }
+
+                
+
+                var params = {
+                    TableName: tableName,
+                    Key: {
+                    "valueId": "gameScreen"
+                    },
+                    UpdateExpression: ("set gameName = :r, showScore = :s, showBasketballStats = :f, sideOneName = :t, sideTwoName = :u, sideOneScore = :v, sideTwoScore = :w, sideOneTimeouts = :a, sideTwoTimeouts = :b, sideOneFouls = :c, sideTwoFouls = :d, sideOneTheme = :g, sideTwoTheme = :h, sideOneMatchTheme = :i, sideTwoMatchTheme = :j, countingDown = :e, showStopwatch = :x, periodIntervalSeconds = :y, periodMark = :z"),
+                    ExpressionAttributeValues: {
+                        ":r": document.getElementById("gameName").value,
+                        ":s": document.getElementById("showGame").checked,
+                        ":f": document.getElementById("showBasketballStats").checked,
+                        ":t": document.getElementById("side_1-name-scores").value,
+                        ":u": document.getElementById("side_2-name-scores").value,
+                        ":v": parseInt(document.getElementById("side_1-score").value),
+                        ":w": parseInt(document.getElementById("side_2-score").value),
+                        ":a": parseInt(document.getElementById("side_1-timeouts").value),
+                        ":b": parseInt(document.getElementById("side_2-timeouts").value),
+                        ":c": parseInt(document.getElementById("side_1-fouls").value),
+                        ":d": parseInt(document.getElementById("side_2-fouls").value),
+                        ":g": sideOneTheme,
+                        ":h": sideTwoTheme,
+                        ":i": document.getElementById("side_1-matchTheme").checked,
+                        ":j": document.getElementById("side_2-matchTheme").checked,
+                        ":e": document.getElementById("countingDown").checked,
+                        ":x": document.getElementById("showStopwatch").checked,
+                        ":y": parseInt(document.getElementById("periodInterval").value),
+                        ":z": document.getElementById("periodMark").value,
+
+                    },
+                    ReturnValues: "UPDATED_NEW"
+                };
+                
+                dynamoClient.update(params, function(err, data) {});
+
+                var timeComponents = document.getElementById('startTime').value.split(':');
+
+                var hours = parseInt(timeComponents[0], 10) || 0;
+                var minutes = parseInt(timeComponents[1], 10) || 0;
+                var seconds = parseInt(timeComponents[2], 10) || 0;
+
+                var date = new Date();
+                date.setHours(hours);
+                date.setMinutes(minutes);
+                date.setSeconds(seconds);
+
+                var epochTimeInMs = date.getTime();
+
+                var theme_school = document.getElementById("theme_color_school").value
+                var theme_order = document.getElementById("theme_color_order").value
+                var combined_theme = `${theme_school}_${theme_order}`
+
+                var params = {
+                    TableName: tableName,
+                    Key: {
+                    "valueId": "startingSoon"
+                    },
+                    UpdateExpression: ("set eventTitle1 = :r, eventTitle2 = :s, nextEvent = :t, targetTimeMs = :u, themeSchool = :v"),
+                    ExpressionAttributeValues: {
+                        ":r": document.getElementById("eventTitle").value,
+                        ":s": document.getElementById("eventSubtitle").value,
+                        ":t": document.getElementById("nextEvent").value,
+                        ":u": epochTimeInMs.toString(),
+                        ":v": combined_theme
+                    },
+                    ReturnValues: "UPDATED_NEW"
+                };
+                
+                dynamoClient.update(params, function(err, data) {});
+
+                await new Promise(r => setTimeout(r, 500));
+
+                document.getElementById("saveValues").innerText = "Save Values"
+                document.getElementById("saveValues").style.removeProperty("background-color")
+
+                document.getElementById('colorDiv').innerHTML = "";
+                fetchData()
+            });
             
             schoolDd.appendChild(surroundingDiv);
             schoolDd.appendChild(imageDisplay)
             schoolDd.appendChild(imagePicker)
             schoolDd.appendChild(deleteIconButton)
+            schoolDd.appendChild(deleteSchoolButton)
 
             schoolDiv.appendChild(schoolName_0);
             schoolDiv.appendChild(schoolDd);
@@ -899,7 +1173,7 @@ async function updateData() {
             },
             UpdateExpression: ("set " + schoolCode + " = :r"),
             ExpressionAttributeValues: {
-                ":r": "#000",
+                ":r": "#000000",
 
             },
             ReturnValues: "UPDATED_NEW"
@@ -914,7 +1188,7 @@ async function updateData() {
             },
             UpdateExpression: ("set " + schoolCode + " = :r"),
             ExpressionAttributeValues: {
-                ":r": "#000",
+                ":r": "#000000",
 
             },
             ReturnValues: "UPDATED_NEW"
@@ -1031,6 +1305,37 @@ async function updateData() {
     if (document.getElementById('slaveModeEnabled') == false) {
         document.getElementById("blurrableElement").classList.remove("blur");
     }
+
+    var themeOneSelector = document.getElementById("side_1-theme")
+    document.getElementById("side_1-theme").innerHTML = ""
+    schools.forEach((school) => {
+        var option = document.createElement('option')
+        option.value = school.toUpperCase()
+        option.innerText = school.toUpperCase()
+        themeOneSelector.appendChild(option)
+    });
+    themeOneSelector.value = docData['team_1_theme']
+
+    var themeTwoSelector = document.getElementById("side_2-theme")
+    document.getElementById("side_2-theme").innerHTML = ""
+    schools.forEach((school) => {
+        var option = document.createElement('option')
+        option.value = school.toUpperCase()
+        option.innerText = school.toUpperCase()
+        themeTwoSelector.appendChild(option)
+    });
+    themeTwoSelector.value = docData['team_2_theme']
+
+    var countdownThemeSelector = document.getElementById("theme_color_school")
+    document.getElementById("theme_color_school").innerHTML = ""
+    schools.forEach((school) => {
+        var option = document.createElement('option')
+        option.value = school.toLowerCase()
+        option.innerText = school.toUpperCase()
+        countdownThemeSelector.appendChild(option)
+    });
+    var splitTheme = docData["themeSchool"].split("_")
+    countdownThemeSelector.value = splitTheme[0];
 }
 
 var countingDown; /* If true, count the stopwatch down, if false, count up */
@@ -1299,4 +1604,8 @@ async function uploadFileToS3(filePath, bucketName, key) {
     console.error('Upload failed:', err);
     throw err;
   }
+}
+
+function isValidHex(str) {
+    return /^#[0-9A-Fa-f]{6}$/.test(str);
 }

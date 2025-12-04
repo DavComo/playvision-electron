@@ -108,6 +108,11 @@ async function init() {
 var docData = {};
 var docDataTemp = {};
 var colors = {};
+
+var team_color_1_primary = colors[docData['team_1_theme'].toLowerCase() + '_primary']
+var team_color_2_primary = colors[docData['team_2_theme'].toLowerCase() + '_primary']
+var team_color_1_secondary = colors[docData['team_1_theme'].toLowerCase() + '_secondary']
+var team_color_2_secondary = colors[docData['team_2_theme'].toLowerCase() + '_secondary']
 //Update Data (Source js + refactoring)
 async function updateData() {
     var deltaStart = Date.now();
@@ -159,7 +164,12 @@ async function updateData() {
     updateStopwatch(docData);
 
     if (docData['hide_1'] == false) {
-        if ($('#team_1').text() != docData['team_1'] || $('#team_2').text() != docData['team_2'] || sideOneTheme != docData['team_1_theme'] || sideTwoTheme != docData['team_2_theme'] || document.getElementById('team_1_icon').src != docData['s3LocationsHTTPS'][sideOneTheme.toLowerCase()] || document.getElementById('team_2_icon').src != docData['s3LocationsHTTPS'][sideTwoTheme.toLowerCase()]) {
+        if ($('#team_1').text() != docData['team_1'] || $('#team_2').text() != docData['team_2'] || sideOneTheme != docData['team_1_theme'] || sideTwoTheme != docData['team_2_theme'] || document.getElementById('team_1_icon').src != docData['s3LocationsHTTPS'][sideOneTheme.toLowerCase()] || document.getElementById('team_2_icon').src != docData['s3LocationsHTTPS'][sideTwoTheme.toLowerCase()] || team_color_1_primary != colors[docData['team_1_theme'].toLowerCase() + '_primary'] || team_color_2_primary != colors[docData['team_2_theme'].toLowerCase() + '_primary'] || team_color_1_secondary != colors[docData['team_1_theme'].toLowerCase() + '_secondary'] || team_color_2_secondary != colors[docData['team_2_theme'].toLowerCase() + '_secondary']) {
+            team_color_1_primary = colors[docData['team_1_theme'].toLowerCase() + '_primary']
+            team_color_2_primary = colors[docData['team_2_theme'].toLowerCase() + '_primary']
+            team_color_1_secondary = colors[docData['team_1_theme'].toLowerCase() + '_secondary']
+            team_color_2_secondary = colors[docData['team_2_theme'].toLowerCase() + '_secondary']
+            
             minTimeout += 3000;
             await new Promise(resolve => { 
                 sideOneTheme = docData['team_1_theme']
@@ -430,4 +440,14 @@ function hideError() {
     document.getElementById("error-message").innerText = ""
     document.getElementsByClassName("error-container")[0].style.display = "none"
     document.getElementById("main-container").classList.remove("blur") 
+}
+
+function colorsEqual(hexColor, rgbColor) {
+    var rgbConvertedToHex = rgbToHex(rgbColor)
+    return hexColor != rgbConvertedToHex.toUpperCase()
+}
+
+function rgbToHex(rgb) {
+    const nums = rgb.match(/\d+/g).map(Number);
+    return "#" + nums.map(n => n.toString(16).padStart(2, "0")).join("");
 }
