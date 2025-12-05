@@ -925,7 +925,9 @@ async function updateData() {
                     theme.remove()
                 })
 
-                document.getElementById('theme_color_school').value = document.getElementById('theme_color_school').options[0].value
+                if (schoolCode == document.getElementById('theme_color_school').value) {
+                    document.getElementById('theme_color_school').value = document.getElementById('theme_color_school').options[0].value
+                }
 
                 event.target.parentElement.parentElement.remove()
 
