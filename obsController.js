@@ -180,6 +180,8 @@ async function updatePreviews() {
             }
         }
         studioMode = false;
+        document.getElementsByClassName('selectedPreview')[0].classList.remove('selectedPreview')
+        document.getElementsByClassName('preview')[0].classList.remove('preview')
     }
 
     if (lastUpdated >= miniScenesMultiplier) {
