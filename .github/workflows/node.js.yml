@@ -1,36 +1,50 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
 name: Publish Latest Version
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    paths:
+      - "package.json"   # Only run when package.json changes
 
 permissions:
   contents: write
   packages: write
 
 jobs:
-  deploy:
-
+  publish:
     runs-on: macos-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    strategy:
-      matrix:
-        node-version: [22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
     - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
+
+    # Check if version changed
+    - name: Detect version change
+      id: version
+      run: |
+        OLD_VERSION=$(git show HEAD^:package.json | jq -r .version)
+        NEW_VERSION=$(jq -r .version package.json)
+
+        echo "Old version: $OLD_VERSION"
+        echo "New version: $NEW_VERSION"
+
+        if [ "$OLD_VERSION" != "$NEW_VERSION" ]; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+        else
+          echo "changed=false" >> $GITHUB_OUTPUT
+        fi
+
+    # Skip job if version didn't change
+    - name: Stop if version unchanged
+      if: steps.version.outputs.changed == 'false'
+      run: echo "Version did not change — skipping." && exit 0
+
+    - name: Use Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 22.x
         cache: 'npm'
+
     - run: npm ci
     - run: npm run publishProd
