@@ -144,7 +144,8 @@ async function updateData() {
         "showStopwatch" : docDataTemp['gameScreen']['showStopwatch'].BOOL,
         "periodMark" : docDataTemp['gameScreen']['periodMark'].S,
         "s3Locations" : docDataTemp['schoolIconURL'],
-        "s3LocationsHTTPS" : []
+        "s3LocationsHTTPS" : [],
+        "displayPosition" : docDataTemp['gameScreen']['displayPosition'].S
     }
 
     for (var i = 0; i < Object.keys(docDataTemp['primaryColors']).length; i++) {
@@ -164,41 +165,73 @@ async function updateData() {
     updateStopwatch(docData);
 
     if (docData['hide_1'] == false) {
-        if ($('#team_1').text() != docData['team_1'] || $('#team_2').text() != docData['team_2'] || sideOneTheme != docData['team_1_theme'] || sideTwoTheme != docData['team_2_theme'] || document.getElementById('team_1_icon').src != docData['s3LocationsHTTPS'][sideOneTheme.toLowerCase()] || document.getElementById('team_2_icon').src != docData['s3LocationsHTTPS'][sideTwoTheme.toLowerCase()] || team_color_1_primary != colors[docData['team_1_theme'].toLowerCase() + '_primary'] || team_color_2_primary != colors[docData['team_2_theme'].toLowerCase() + '_primary'] || team_color_1_secondary != colors[docData['team_1_theme'].toLowerCase() + '_secondary'] || team_color_2_secondary != colors[docData['team_2_theme'].toLowerCase() + '_secondary']) {
+        if (Array.from($('body')[0].classList).includes(docData['displayPosition']) == false || $('#team_1').text() != docData['team_1'] || $('#team_2').text() != docData['team_2'] || sideOneTheme != docData['team_1_theme'] || sideTwoTheme != docData['team_2_theme'] || document.getElementById('team_1_icon').src != docData['s3LocationsHTTPS'][sideOneTheme.toLowerCase()] || document.getElementById('team_2_icon').src != docData['s3LocationsHTTPS'][sideTwoTheme.toLowerCase()] || team_color_1_primary != colors[docData['team_1_theme'].toLowerCase() + '_primary'] || team_color_2_primary != colors[docData['team_2_theme'].toLowerCase() + '_primary'] || team_color_1_secondary != colors[docData['team_1_theme'].toLowerCase() + '_secondary'] || team_color_2_secondary != colors[docData['team_2_theme'].toLowerCase() + '_secondary']) {
             team_color_1_primary = colors[docData['team_1_theme'].toLowerCase() + '_primary']
             team_color_2_primary = colors[docData['team_2_theme'].toLowerCase() + '_primary']
             team_color_1_secondary = colors[docData['team_1_theme'].toLowerCase() + '_secondary']
             team_color_2_secondary = colors[docData['team_2_theme'].toLowerCase() + '_secondary']
             
             minTimeout += 3000;
-            await new Promise(resolve => { 
-                sideOneTheme = docData['team_1_theme']
-                sideTwoTheme = docData['team_2_theme']
-                $('body')
-                    .queue(elemHide('.timeout.right'))
-                    .queue(elemHide('.timeout.left')).delay(500)
-                    .queue(elemHide('.top-container'))
-                    .queue(elemHide('.stopwatch-container')).delay(500)
-                    .queue(elemHide('.main-container')).delay(500)
-                    .queue(updateSpecific('gameName', 'gameName_1'))
-                    .queue(updateIcon('team_1_icon', docData['team_1_theme']))
-                    .queue(updateIcon('team_2_icon', docData['team_2_theme']))
-                    .queue(updateColors())
-                    .queue(updateSpecific('team_1', 'team_1'))
-                    .queue(updateSpecific('team_2', 'team_2'))
-                    .queue(updateSpecific('team_1s', 'team_1s'))
-                    .queue(updateSpecific('team_2s', 'team_2s'))
-                    .queue(updateSizing())
-                    .queue(elemShow('.main-container')).delay(500)
-                    .queue(elemShow('.stopwatch-container'))
-                    .queue(elemShow('.top-container')).delay(500)
-                    .queue(elemShow('.timeout.right'))
-                    .queue(elemShow('.timeout.left'))
-                    .queue(function(next) {
-                        resolve();
-                        next();
-                    });
-            });
+            if (docData['displayPosition'] == "center") {
+                await new Promise(resolve => { 
+                    sideOneTheme = docData['team_1_theme']
+                    sideTwoTheme = docData['team_2_theme']
+                    $('body')
+                        .queue(elemHide('.timeout.right'))
+                        .queue(elemHide('.timeout.left')).delay(500)
+                        .queue(elemHide('.top-container'))
+                        .queue(elemHide('.stopwatch-container')).delay(500)
+                        .queue(elemHide('.main-container')).delay(500)
+                        .queue(updateSpecific('gameName', 'gameName_1'))
+                        .queue(updatePosition(docData['displayPosition'])).delay(500)
+                        .queue(updateIcon('team_1_icon', docData['team_1_theme']))
+                        .queue(updateIcon('team_2_icon', docData['team_2_theme']))
+                        .queue(updateColors())
+                        .queue(updateSpecific('team_1', 'team_1'))
+                        .queue(updateSpecific('team_2', 'team_2'))
+                        .queue(updateSpecific('team_1s', 'team_1s'))
+                        .queue(updateSpecific('team_2s', 'team_2s'))
+                        .queue(updateSizing())
+                        .queue(elemShow('.main-container')).delay(500)
+                        .queue(elemShow('.stopwatch-container'))
+                        .queue(elemShow('.top-container')).delay(500)
+                        .queue(elemShow('.timeout.right'))
+                        .queue(elemShow('.timeout.left'))
+                        .queue(function(next) {
+                            resolve();
+                            next();
+                        });
+                });
+            } else {
+                await new Promise(resolve => { 
+                    sideOneTheme = docData['team_1_theme']
+                    sideTwoTheme = docData['team_2_theme']
+                    $('body')
+                        .queue(elemHide('.timeout.right'))
+                        .queue(elemHide('.timeout.left')).delay(500)
+                        .queue(elemHide('.top-container'))
+                        .queue(elemHide('.stopwatch-container')).delay(500)
+                        .queue(elemHide('.main-container')).delay(500)
+                        .queue(updateSpecific('gameName', 'gameName_1'))
+                        .queue(updatePosition(docData['displayPosition'])).delay(500)
+                        .queue(updateIcon('team_1_icon', docData['team_1_theme']))
+                        .queue(updateIcon('team_2_icon', docData['team_2_theme']))
+                        .queue(updateColors())
+                        .queue(updateSpecific('team_1', 'team_1'))
+                        .queue(updateSpecific('team_2', 'team_2'))
+                        .queue(updateSpecific('team_1s', 'team_1s'))
+                        .queue(updateSpecific('team_2s', 'team_2s'))
+                        .queue(updateSizing())
+                        .queue(elemShow('.main-container')).delay(500)
+                        .queue(elemShow('.stopwatch-container'))
+                        .queue(elemShow('.timeout.right'))
+                        .queue(elemShow('.timeout.left'))
+                        .queue(function(next) {
+                            resolve();
+                            next();
+                        });
+                });
+            }
         }
 
         $('body')
@@ -269,19 +302,24 @@ async function updateData() {
             }
         }
     } else {
+        if ($('.main-container').hasClass('hidden') == false) {
+            $('body')
+                .queue(elemHide('.timeout.right'))
+                .queue(elemHide('.timeout.left')).delay(500)
+                .queue(elemHide('.top-container'))
+                .queue(elemHide('.stopwatch-container')).delay(500)
+                .queue(elemHide('.main-container')).delay(500)
+        }
         minTimeout += 1000;
         sideOneTheme = docData['team_1_theme']
         sideTwoTheme = docData['team_2_theme']
         $('body')
-            .queue(elemHide('.timeout.right'))
-            .queue(elemHide('.timeout.left')).delay(500)
-            .queue(elemHide('.top-container'))
-            .queue(elemHide('.stopwatch-container')).delay(500)
-            .queue(elemHide('.main-container'))
-            .queue(updateSpecific('team_1', 'team_1'))
+            .queue(updateSpecific('gameName', 'gameName_1'))
+            .queue(updatePosition(docData['displayPosition'])).delay(500)
             .queue(updateIcon('team_1_icon', docData['team_1_theme']))
             .queue(updateIcon('team_2_icon', docData['team_2_theme']))
             .queue(updateColors())
+            .queue(updateSpecific('team_1', 'team_1'))
             .queue(updateSpecific('team_2', 'team_2'))
             .queue(updateSpecific('team_1s', 'team_1s'))
             .queue(updateSpecific('team_2s', 'team_2s'))
@@ -372,6 +410,14 @@ function updateSizing() {
 function updateIcon(htmlelem, schoolName) {
     return async function(next) {
         $('#' + htmlelem).attr('src', docData['s3LocationsHTTPS'][schoolName.toLowerCase()]);
+        next();
+    }
+}
+
+function updatePosition(newPosition) {
+    return async function(next) {
+        $('body')[0].classList = ""
+        $('body')[0].classList.add(newPosition);
         next();
     }
 }

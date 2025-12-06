@@ -5,6 +5,10 @@ body {
     margin: 0;
 }
 
+body.left {
+    justify-content: flex-start;
+}
+
 .main-container,
 .top-container,
 .bottom-container {
@@ -29,6 +33,11 @@ body {
     transition: clip-path 0.5s ease-in-out;
 }
 
+body.left .main-container {
+    margin-top: -38px;
+    margin-bottom: auto;
+}
+
 .center-container {
     min-width: 1000px;
     height: 91px;
@@ -36,6 +45,10 @@ body {
     clip-path: polygon(0% 0%, 2.5% 100%, 97.5% 100%, 100% 0%);
     display: flex;
     border: 3px white solid;
+}
+
+body.left .center-container {
+    clip-path: polygon(0% 0%, 0% 100%, 97.5% 100%, 100% 0%);
 }
 
 .score-container-left {
@@ -53,6 +66,10 @@ body {
     display: flex;
     position: absolute;
     clip-path: polygon(0% 0%, 0% 100%, 95% 100%, 100% 0%);
+}
+
+body.left .score-container-left {
+    clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%);
 }
 
 .score-block {
@@ -80,6 +97,10 @@ body {
     background: linear-gradient(90deg, rgba(0,0,0,0.8) 5%, rgba(0,0,0,0) 70%);
 }
 
+body.left .gradient-left {
+    clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%); 
+}
+
 .gradient-right {
     min-width: 500px;
     height: 91px;
@@ -94,6 +115,10 @@ body {
     flex-wrap: wrap;
     position: fixed;
     z-index: -1;
+}
+
+body.left .score-container-left .icon-box {
+    clip-path: none !important;
 }
 
 img {
@@ -117,6 +142,10 @@ img {
 
 .top-container.hidden {
     margin-bottom: -41px;
+}
+
+body.left .top-container.hidden {
+    margin-bottom: -3px;
 }
 
 .top-colored {
@@ -196,6 +225,11 @@ img {
 .main-container.hidden {
     clip-path: polygon(50% 0%, 50% 100%, 50% 100%, 50% 0%);
     margin-bottom: 100px;
+}
+
+body.left .main-container.hidden {
+    clip-path: none;
+    margin-top: -200px;
 }
 
 .stopwatch-container.hidden {

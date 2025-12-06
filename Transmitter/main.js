@@ -263,7 +263,7 @@ function initButtons() {
             Key: {
               "valueId": "gameScreen"
             },
-            UpdateExpression: ("set gameName = :r, showScore = :s, showBasketballStats = :f, sideOneName = :t, sideTwoName = :u, sideOneScore = :v, sideTwoScore = :w, sideOneTimeouts = :a, sideTwoTimeouts = :b, sideOneFouls = :c, sideTwoFouls = :d, sideOneTheme = :g, sideTwoTheme = :h, sideOneMatchTheme = :i, sideTwoMatchTheme = :j, countingDown = :e, showStopwatch = :x, periodIntervalSeconds = :y, periodMark = :z"),
+            UpdateExpression: ("set gameName = :r, showScore = :s, showBasketballStats = :f, sideOneName = :t, sideTwoName = :u, sideOneScore = :v, sideTwoScore = :w, sideOneTimeouts = :a, sideTwoTimeouts = :b, sideOneFouls = :c, sideTwoFouls = :d, sideOneTheme = :g, sideTwoTheme = :h, sideOneMatchTheme = :i, sideTwoMatchTheme = :j, displayPosition = :k, countingDown = :e, showStopwatch = :x, periodIntervalSeconds = :y, periodMark = :z"),
             ExpressionAttributeValues: {
                 ":r": document.getElementById("gameName").value,
                 ":s": document.getElementById("showGame").checked,
@@ -280,6 +280,7 @@ function initButtons() {
                 ":h": sideTwoTheme,
                 ":i": document.getElementById("side_1-matchTheme").checked,
                 ":j": document.getElementById("side_2-matchTheme").checked,
+                ":k": document.getElementById("score_position").value,
                 ":e": document.getElementById("countingDown").checked,
                 ":x": document.getElementById("showStopwatch").checked,
                 ":y": parseInt(document.getElementById("periodInterval").value),
@@ -681,7 +682,8 @@ async function updateData() {
         "eventTitle-2" : docDataTemp['startingSoon']['eventTitle2'].S,
         "nextEvent" : docDataTemp['startingSoon']['nextEvent'].S,
         "targetTimeMs" : docDataTemp['startingSoon']['targetTimeMs'].S,
-        "themeSchool" : docDataTemp['startingSoon']['themeSchool'].S
+        "themeSchool" : docDataTemp['startingSoon']['themeSchool'].S,
+        "displayPosition" : docDataTemp['gameScreen']['displayPosition'].S
     }
 
     schools = [];
@@ -1060,7 +1062,7 @@ async function updateData() {
                     Key: {
                     "valueId": "gameScreen"
                     },
-                    UpdateExpression: ("set gameName = :r, showScore = :s, showBasketballStats = :f, sideOneName = :t, sideTwoName = :u, sideOneScore = :v, sideTwoScore = :w, sideOneTimeouts = :a, sideTwoTimeouts = :b, sideOneFouls = :c, sideTwoFouls = :d, sideOneTheme = :g, sideTwoTheme = :h, sideOneMatchTheme = :i, sideTwoMatchTheme = :j, countingDown = :e, showStopwatch = :x, periodIntervalSeconds = :y, periodMark = :z"),
+                    UpdateExpression: ("set gameName = :r, showScore = :s, showBasketballStats = :f, sideOneName = :t, sideTwoName = :u, sideOneScore = :v, sideTwoScore = :w, sideOneTimeouts = :a, sideTwoTimeouts = :b, sideOneFouls = :c, sideTwoFouls = :d, sideOneTheme = :g, sideTwoTheme = :h, sideOneMatchTheme = :i, sideTwoMatchTheme = :j, displayPosition = :k, countingDown = :e, showStopwatch = :x, periodIntervalSeconds = :y, periodMark = :z"),
                     ExpressionAttributeValues: {
                         ":r": document.getElementById("gameName").value,
                         ":s": document.getElementById("showGame").checked,
@@ -1077,6 +1079,7 @@ async function updateData() {
                         ":h": sideTwoTheme,
                         ":i": document.getElementById("side_1-matchTheme").checked,
                         ":j": document.getElementById("side_2-matchTheme").checked,
+                        ":k": document.getElementById("score_position").value,
                         ":e": document.getElementById("countingDown").checked,
                         ":x": document.getElementById("showStopwatch").checked,
                         ":y": parseInt(document.getElementById("periodInterval").value),
@@ -1338,6 +1341,8 @@ async function updateData() {
     });
     var splitTheme = docData["themeSchool"].split("_")
     countdownThemeSelector.value = splitTheme[0];
+
+    document.getElementById("score_position").value = docData['displayPosition']
 }
 
 var countingDown; /* If true, count the stopwatch down, if false, count up */

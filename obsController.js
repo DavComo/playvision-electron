@@ -4,6 +4,10 @@ let websocketConnected = false;
 let existingScenes = [];
 let lastUpdated = Infinity;
 
+var intervalId;
+
+var studioMode = false;
+
 const updateInterval = 250;
 const miniScenesMultiplier = 4; //miniScenesMultiplier * updateInterval = mini scene update interval
 
@@ -95,11 +99,15 @@ async function setInitialValues() {
         existingScenes.push(scene.sceneName);
     }
 
-    response = await obs.call('GetCurrentPreviewScene');
-    if (document.getElementById(response.currentPreviewSceneName)) {
-        document.getElementById(response.currentPreviewSceneName).classList.add('preview');
+    try {
+        response = await obs.call('GetCurrentPreviewScene');
+        if (document.getElementById(response.currentPreviewSceneName)) {
+            document.getElementById(response.currentPreviewSceneName).classList.add('preview');
+        }
+        document.querySelector(`[data-scene-uuid="${response.sceneUuid}"]`).classList.add('selectedPreview');
+    } catch (e) {
+        studioMode = false;
     }
-    document.querySelector(`[data-scene-uuid="${response.sceneUuid}"]`).classList.add('selectedPreview');
 
 
     response = await obs.call('GetCurrentProgramScene');
@@ -138,21 +146,9 @@ async function getSceneScreenshot(sceneName) {
 }
 
 async function updatePreviews() {
-    let response = await obs.call('GetCurrentPreviewScene');
+    let response = await obs.call('GetCurrentProgramScene');
 
     let screenshot = await getSceneScreenshot(response.sceneName);
-    if (screenshot) {
-        document.getElementById('preview').src = screenshot;
-        document.getElementById('preview').dataset.sceneName = response.sceneName;
-        
-        if (document.getElementById(response.sceneName)) {
-            document.getElementById(response.sceneName).src = screenshot;
-        }
-    }
-
-    response = await obs.call('GetCurrentProgramScene');
-
-    screenshot = await getSceneScreenshot(response.sceneName);
     if (screenshot) {
         document.getElementById('program').src = screenshot;
         document.getElementById('program').dataset.sceneName = response.sceneName;
@@ -160,6 +156,30 @@ async function updatePreviews() {
         if (document.getElementById(response.sceneName)) {
             document.getElementById(response.sceneName).src = screenshot;
         }
+    }
+    try {
+        response = await obs.call('GetCurrentPreviewScene');
+
+        screenshot = await getSceneScreenshot(response.sceneName);
+        if (screenshot) {
+            document.getElementById('preview').src = screenshot;
+            document.getElementById('preview').dataset.sceneName = response.sceneName;
+            
+            if (document.getElementById(response.sceneName)) {
+                document.getElementById(response.sceneName).src = screenshot;
+            }
+        }
+        studioMode = true;
+    } catch (e) {
+        if (screenshot) {
+            document.getElementById('preview').src = screenshot;
+            document.getElementById('preview').dataset.sceneName = response.sceneName;
+            
+            if (document.getElementById(response.sceneName)) {
+                document.getElementById(response.sceneName).src = screenshot;
+            }
+        }
+        studioMode = false;
     }
 
     if (lastUpdated >= miniScenesMultiplier) {
@@ -209,6 +229,7 @@ async function updateStats() {
 async function updateEverything() {
     if (!websocketConnected) {
         await connectOBS();
+        clearInterval(intervalId)
         return;
     }
     try {
@@ -314,7 +335,7 @@ obs.on('CurrentSceneTransitionChanged', (data) => {
 // Connect to OBS and get the screenshot
 connectOBS().then(async () => {
     setInitialValues();
-    setInterval(updateEverything, updateInterval);
+    intervalId = setInterval(updateEverything, updateInterval);
 });
 
 
@@ -352,10 +373,17 @@ window.switchPreviews = async function () {
         return;
     }
 
-    document.getElementById('changeSceneLoader').classList.remove('hidden');
-    obs.call('SetCurrentPreviewScene', {
-        sceneUuid: this.getAttribute('data-scene-uuid')
-    });
+    if (studioMode) {
+        document.getElementById('changeSceneLoader').classList.remove('hidden');
+        obs.call('SetCurrentPreviewScene', {
+            sceneUuid: this.getAttribute('data-scene-uuid')
+        });
+    } else {
+        document.getElementById('changeSceneLoader').classList.remove('hidden');
+        obs.call('SetCurrentProgramScene', {
+            sceneUuid: this.getAttribute('data-scene-uuid')
+        });
+    }
 }
 
 window.changeTransition = async function () {
