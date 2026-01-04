@@ -722,7 +722,7 @@ async function updateData() {
             schoolName_1.classList.add("formRow-labelWrapper");
             var schoolName_2 = document.createElement("label");
             schoolName_2.classList.add("formRow-label");
-            schoolName_2.innerText = schoolCode.toUpperCase() + " Colors";
+            schoolName_2.innerText = schoolCode.toUpperCase();
 
             schoolName_1.appendChild(schoolName_2);
             schoolName_0.appendChild(schoolName_1);
